@@ -1,13 +1,33 @@
-// eslint-disable-next-line no-unused-vars
-import { useState } from 'react'
-import './App.css'
+import "./App.css";
+import { useState } from "react";
 
 function App() {
-  return (
-    <>
-      <input className="textBox" type="text" placeholder='Send a message' />
-    </>
-  )
+    const [message, setMessage] = useState("");
+
+    const handleChange = (e) => {
+        if (e.key === "Enter") {
+            sendMessage({ message });
+            setMessage("");
+        } else {
+            setMessage(e.target.value);
+        }
+    };
+
+    return (
+        <input
+            id="textBox"
+            className="textBox"
+            type="text"
+            placeholder="Send a message"
+            value={message}
+            onChange={handleChange}
+            onKeyDown={handleChange}
+        />
+    );
 }
 
-export default App
+function sendMessage(message) {
+    console.log(message);
+}
+
+export default App;
