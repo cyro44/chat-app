@@ -51,8 +51,12 @@ function App() {
                     onChange={(e) => setUsername(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
-                            localStorage.setItem("username", username);
-                            setUsername("");
+                            if (username.length >= 4 && username.length <= 18) {
+                                localStorage.setItem("username", username);
+                                setUsername("");
+                            } else {
+                                alert("Username must be between 4 and 18 characters");
+                            }
                         }
                     }}
                 />
