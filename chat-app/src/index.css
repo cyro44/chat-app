@@ -35,6 +35,10 @@ h1 {
     line-height: 1.1;
 }
 
+.strong {
+    font-weight: 600;
+}
+
 button {
     border-radius: 8px;
     border: 1px solid transparent;
@@ -51,11 +55,6 @@ button:hover {
     border-color: #646cff;
 }
 
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-}
-
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
@@ -69,7 +68,7 @@ button:focus-visible {
     }
 }
 
-.textBox {
+input {
     position: fixed;
     padding: 10px;
     border-radius: 8px;
@@ -77,6 +76,7 @@ button:focus-visible {
     width: calc(100vw - 120px);
     height: 30px;
     bottom: 20px;
+    left: 50%;
     transform: translateX(-50%);
     outline: none;
     font-size: 16px;
@@ -86,4 +86,49 @@ p {
     position: relative;
     left: 0;
     text-align: left;
+    overflow-wrap: break-word;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #5a5a5a;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.usernameModal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    width: 75vw;
+    height: 75vh;
+    z-index: 2;
+    padding: 20px;
+}
+
+.usernameModal input {
+    width: calc(95% - 20px);
+}
+
+.usernameBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+}
+
+.usernameBtn:active {
+    transform: scale(0.99);
+    transition: transform 0.25s;
 }
