@@ -42,11 +42,6 @@ function newToast(title, description, type = "none", timeout = 5000) {
     }, timeout / 100);
 }
 
-const stylesheet = document.createElement("link");
-stylesheet.rel = "stylesheet";
-stylesheet.href = "/css/util/toast.css";
-document.head.appendChild(stylesheet);
-
 document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(toastHolder);
 });

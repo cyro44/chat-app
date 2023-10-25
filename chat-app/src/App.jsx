@@ -28,7 +28,7 @@ function App() {
     const sendMessage = (message) => {
         const username = localStorage.getItem("username");
         if (!username || username === "") {
-            newToast("Error!", "Please set your username first", "error");
+            newToast("Error!", "Please set your username first", "error", 2500);
             return;
         }
         setMessages((prevMessages) => [...prevMessages, message]);
