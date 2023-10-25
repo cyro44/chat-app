@@ -20,12 +20,6 @@ function App() {
         setMessages((prevMessages) => [...prevMessages, message]);
     };
 
-    // const modal = document.querySelector(".usernameModal");
-    // const span = document.getElementsByClassName("close")[0];
-    // span.onclick = function () {
-    //     modal.style.display = "none";
-    // };
-
     const toggleModal = () => {
         setShowModal(!showModal);
     };

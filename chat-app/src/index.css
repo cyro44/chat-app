@@ -87,6 +87,11 @@ p {
     left: 0;
     text-align: left;
     overflow-wrap: break-word;
+    width: calc(100vw - 32px);
+}
+
+p:hover {
+    background-color: #1a1a1a;
 }
 
 .close {
