@@ -17,6 +17,11 @@ function App() {
     };
 
     const sendMessage = (message) => {
+        const username = localStorage.getItem("username");
+        if (!username || username === "") {
+            alert("Please set a username before sending a message.");
+            return;
+        }
         setMessages((prevMessages) => [...prevMessages, message]);
     };
 
@@ -47,6 +52,7 @@ function App() {
                         if (e.key === "Enter") {
                             if (username.length >= 4 && username.length <= 18) {
                                 localStorage.setItem("username", username);
+                                alert("Username set to " + username);
                                 setUsername("");
                             } else {
                                 alert("Username must be between 4 and 18 characters");
