@@ -1,5 +1,6 @@
 import "./App.css";
 import { useState } from "react";
+import { newToast } from "./util/toast";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -9,8 +10,16 @@ function App() {
 
     const handleChange = (e) => {
         if (e.key === "Enter") {
-            sendMessage(message);
-            setMessage("");
+            if (message.trim() === "") {
+                newToast(
+                    "Error!",
+                    "Message cannot be empty or only spaces",
+                    "error"
+                );
+            } else {
+                sendMessage(message);
+                setMessage("");
+            }
         } else {
             setMessage(e.target.value);
         }
@@ -19,7 +28,7 @@ function App() {
     const sendMessage = (message) => {
         const username = localStorage.getItem("username");
         if (!username || username === "") {
-            alert("Please set a username before sending a message.");
+            newToast("Error!", "Please set your username first", "error");
             return;
         }
         setMessages((prevMessages) => [...prevMessages, message]);
@@ -52,18 +61,33 @@ function App() {
                         if (e.key === "Enter") {
                             if (username.length >= 4 && username.length <= 18) {
                                 localStorage.setItem("username", username);
-                                alert("Username set to " + username);
+                                newToast(
+                                    "Done!",
+                                    "Username set to " + username,
+                                    "info"
+                                );
                                 setUsername("");
                             } else {
-                                alert("Username must be between 4 and 18 characters");
+                                newToast(
+                                    "Error!",
+                                    "Username must be between 4 and 18 characters",
+                                    "error"
+                                );
                             }
                         }
                     }}
                 />
             </div>
             {messages.map((msg, index) => (
-                <p key={index} style={{ textAlign: "left" }}>
-                    <strong className="strong">{ localStorage.getItem("username") }</strong> {msg}
+                <p
+                    key={index}
+                    style={{ textAlign: "left" }}
+                    className="message"
+                >
+                    <strong className="strong">
+                        {localStorage.getItem("username")}
+                    </strong>{" "}
+                    {msg}
                 </p>
             ))}
             <input
