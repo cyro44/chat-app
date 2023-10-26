@@ -1,12 +1,28 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { newToast } from "./util/toast";
+import io from 'socket.io-client';
 
 function App() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
+    const [socket, setSocket] = useState(null);
+    
+    useEffect(() => {
+        const s = io("http://localhost:5173");
+        setSocket(s);
+    
+        s.on('message', (messageObject) => {
+            console.log('Received message:', messageObject.message);
+            setMessages((prevMessages) => [...prevMessages, messageObject]);
+        });
+    
+        return () => {
+            s.disconnect();
+        };
+    }, []);
 
     const handleChange = (e) => {
         if (e.key === "Enter") {
@@ -31,7 +47,8 @@ function App() {
             newToast("Error!", "Please set your username first", "error", 2500);
             return;
         }
-        setMessages((prevMessages) => [...prevMessages, message]);
+        console.log("Sending message:", message);
+        socket.emit('message', { username, message });
     };
 
     const toggleModal = () => {
@@ -85,9 +102,9 @@ function App() {
                     className="message"
                 >
                     <strong className="strong">
-                        {localStorage.getItem("username")}
+                        {msg.username}
                     </strong>{" "}
-                    {msg}
+                    {msg.message}
                 </p>
             ))}
             <input
