@@ -15,7 +15,6 @@ function App() {
         setSocket(s);
 
         s.on("message", (messageObject) => {
-            console.log("Received message:", messageObject.message);
             setMessages((prevMessages) => [...prevMessages, messageObject]);
         });
 
@@ -47,7 +46,6 @@ function App() {
             newToast("Error!", "Please set your username first", "error", 2500);
             return;
         }
-        console.log("Sending message:", message);
         socket.emit("message", { username, message });
     };
 
