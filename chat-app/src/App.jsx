@@ -1,7 +1,7 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 import { newToast } from "./util/toast";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -9,16 +9,16 @@ function App() {
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
     const [socket, setSocket] = useState(null);
-    
+
     useEffect(() => {
         const s = io("http://localhost:5173");
         setSocket(s);
-    
-        s.on('message', (messageObject) => {
-            console.log('Received message:', messageObject.message);
+
+        s.on("message", (messageObject) => {
+            console.log("Received message:", messageObject.message);
             setMessages((prevMessages) => [...prevMessages, messageObject]);
         });
-    
+
         return () => {
             s.disconnect();
         };
@@ -48,7 +48,7 @@ function App() {
             return;
         }
         console.log("Sending message:", message);
-        socket.emit('message', { username, message });
+        socket.emit("message", { username, message });
     };
 
     const toggleModal = () => {
@@ -101,9 +101,7 @@ function App() {
                     style={{ textAlign: "left" }}
                     className="message"
                 >
-                    <strong className="strong">
-                        {msg.username}
-                    </strong>{" "}
+                    <strong className="strong">{msg.username}</strong>{" "}
                     {msg.message}
                 </p>
             ))}
