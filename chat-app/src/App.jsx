@@ -11,7 +11,7 @@ function App() {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const s = io("http://localhost:5173");
+        const s = io("http://127.0.0.1:5173");
         setSocket(s);
 
         s.on("message", (messageObject) => {
