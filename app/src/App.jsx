@@ -165,9 +165,20 @@ function App() {
                     style={{ textAlign: "left" }}
                     className="message"
                 >
-                    {msg.pfp && <img className="pfp" src={msg.pfp} alt="Profile picture" />}
-                    <strong className="strong">{msg.username}</strong>{" "}
-                    {msg.message}
+                    <span className="messageText">
+                        {msg.pfp && (
+                            <img
+                                className="pfp"
+                                src={msg.pfp}
+                                alt="Profile picture"
+                            />
+                        )}
+                        <strong className="strong">{msg.username}</strong>
+                        <br />
+                        <span style={{ marginLeft: "50px" }}>
+                            {msg.message}
+                        </span>
+                    </span>
                 </p>
             ))}
             <input

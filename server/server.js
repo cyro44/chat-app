@@ -20,7 +20,7 @@ const io = new Server(httpServer, {
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
 
 io.on("connection", (socket) => {
-    console.log("New client connected");
+    console.log("Client connected");
 
     socket.on("message", (messageObject) => {
         io.emit("message", messageObject);
