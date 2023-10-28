@@ -192,6 +192,12 @@ input {
     transform: translateY(-50%);
 }
 
+.typingIndicator {
+    position: absolute;
+    bottom: 60px;
+    margin-left: 25px;
+}
+
 .close {
     color: #aaaaaa;
     float: right;

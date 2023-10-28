@@ -11,10 +11,10 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
-  }
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+    },
 });
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
@@ -28,6 +28,10 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log("Client disconnected");
+    });
+
+    socket.on("typing", () => {
+        socket.broadcast.emit("typing", "");
     });
 });
 

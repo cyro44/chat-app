@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { newToast } from "./util/toast";
 import io from "socket.io-client";
 
@@ -11,6 +11,39 @@ function App() {
     const [socket, setSocket] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [showFileInput, setShowFileInput] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef();
+
+    const handleInput = useCallback(() => {
+        if (!isTyping) {
+            setIsTyping(true);
+            socket.emit("typing", { username });
+        }
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+            socket.emit("typing", { username });
+        }, 3000);
+    }, [isTyping, socket, username]);
+
+    useEffect(() => {
+        if (message !== "") {
+            setIsTyping(true);
+        }
+    }, [message]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("typing", () => {
+                setIsTyping(true);
+                setTimeout(() => setIsTyping(false), 3000);
+            });
+
+            return () => {
+                socket.off("typing");
+            };
+        }
+    }, [socket, isTyping]);
 
     const handleFileInput = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -39,6 +72,14 @@ function App() {
 
         s.on("message", (messageObject) => {
             setMessages((prevMessages) => [...prevMessages, messageObject]);
+        });
+
+        s.on("start_typing", () => {
+            setIsTyping(true);
+        });
+
+        s.on("stop_typing", () => {
+            setIsTyping(false);
         });
 
         return () => {
@@ -81,6 +122,18 @@ function App() {
         }
         socket.emit("message", { pfp, username, message, image });
     };
+
+    useEffect(() => {
+        const textBoxElement = document.getElementById("messageBox");
+        if (textBoxElement) {
+            textBoxElement.addEventListener("keydown", handleInput);
+        }
+        return () => {
+            if (textBoxElement) {
+                textBoxElement.removeEventListener("keydown", handleInput);
+            }
+        };
+    }, [handleInput]);
 
     const toggleModal = () => {
         setShowModal(!showModal);
@@ -181,8 +234,13 @@ function App() {
                     </span>
                 </p>
             ))}
+            {isTyping && (
+                <div className="typingIndicator">
+                    {isTyping && <p>Someone is typing...</p>}
+                </div>
+            )}
             <input
-                id="textBox"
+                id="messageBox"
                 className="textBox"
                 type="text"
                 placeholder="Send a message"
