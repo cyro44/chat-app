@@ -12,6 +12,7 @@ function App() {
     const [socket, setSocket] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [showFileInput, setShowFileInput] = useState(false);
+    const [fileSelected, setFileSelected] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
@@ -49,6 +50,7 @@ function App() {
 
     const handleFileInput = (e) => {
         setSelectedFile(e.target.files[0]);
+        setFileSelected(true);
     };
 
     const changePfp = () => {
@@ -208,6 +210,7 @@ function App() {
                         placeholder="Type in your username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        autoComplete="off"
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 if (
@@ -239,7 +242,14 @@ function App() {
                     <button onClick={handleClick}>
                         Change or set Profile Picture
                     </button>
-                    <button onClick={changePfp}>Upload</button>
+                    <button
+                        onClick={() => {
+                            changePfp();
+                            setFileSelected(false);
+                        }}
+                    >
+                        Upload
+                    </button>
                     {showFileInput && (
                         <div>
                             <input
@@ -251,9 +261,14 @@ function App() {
                                 style={{ display: "none" }}
                             />
                             <label htmlFor="file" className="fileInputLabel">
-                                Choose a file
+                                {fileSelected ? "File Selected" : "Choose a file"}
                             </label>
-                            <button onClick={() => setShowFileInput(false)}>
+                            <button
+                                onClick={() => {
+                                    setShowFileInput(false);
+                                    setFileSelected(false);
+                                }}
+                            >
                                 Cancel
                             </button>
                         </div>
@@ -313,6 +328,7 @@ function App() {
                 value={message}
                 onChange={handleChange}
                 onKeyDown={handleChange}
+                autoComplete="off"
             />
         </>
     );
