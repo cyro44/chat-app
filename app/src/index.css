@@ -199,10 +199,26 @@ input {
     transform: translateY(5px);
 }
 
+.editBtn:active {
+    transform: translateY(5px);
+}
+
 .editInput {
     position: absolute;
     top: 60px;
     left: calc(50% + 10px);
+}
+
+.deleteBtn {
+    position: absolute;
+    right: 50px;
+    padding: 10px;
+    transform: translate(-70px, 5px);
+    z-index: -1;
+}
+
+.deleteBtn:active {
+    transform: translate(-60px, 5px);
 }
 
 .typingIndicator {

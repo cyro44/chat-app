@@ -173,6 +173,19 @@ function App() {
         }
     };
 
+    const handleDeleteClick = (id) => {
+        setMessages(
+            messages.filter((msg) => msg.id!== id)
+        );
+        const updatedMessages = messages.filter((msg) => msg.id!== id);
+        setMessages(updatedMessages);
+
+        const deletedMessage = updatedMessages.find((msg) => msg.id === id);
+        if (deletedMessage) {
+            socket.emit("delete_message", deletedMessage);
+        }
+    }
+
     useEffect(() => {
         const textBoxElement = document.getElementById("messageBox");
         if (textBoxElement) {
@@ -311,6 +324,14 @@ function App() {
                             onClick={() => handleEditClick(msg.id)}
                         >
                             {editingMessage === msg.id ? "Save" : "Edit"}
+                        </button>
+                    )}
+                    {msg.username === currentUser && (
+                        <button
+                            className="deleteBtn"
+                            onClick={() => handleDeleteClick(msg.id)}
+                        >
+                            Delete
                         </button>
                     )}
                 </div>
