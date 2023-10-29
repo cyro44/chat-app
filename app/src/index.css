@@ -185,11 +185,24 @@ input {
     overflow-wrap: break-word;
     width: calc(100vw - 32px);
     margin: 0;
-    transform: translateY(-50%);
+    transform: translateY(-25%);
 }
 
 .messageText {
     transform: translateY(-50%);
+}
+
+.editBtn {
+    position: absolute;
+    right: 50px;
+    padding: 10px;
+    transform: translateY(5px);
+}
+
+.editInput {
+    position: absolute;
+    top: 60px;
+    left: calc(50% + 10px);
 }
 
 .typingIndicator {

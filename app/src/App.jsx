@@ -2,6 +2,7 @@ import "./App.css";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { newToast } from "./util/toast";
 import io from "socket.io-client";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -13,6 +14,7 @@ function App() {
     const [showFileInput, setShowFileInput] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef();
+    const [editingMessage, setEditingMessage] = useState(null);
 
     const handleInput = useCallback(() => {
         if (!isTyping) {
@@ -70,20 +72,32 @@ function App() {
         const s = io("http://127.0.0.1:5173");
         setSocket(s);
 
-        s.on("message", (messageObject) => {
-            setMessages((prevMessages) => [...prevMessages, messageObject]);
-        });
+        if (s) {
+            s.on("message", (messageObject) => {
+                setMessages((prevMessages) => [...prevMessages, messageObject]);
+            });
 
-        s.on("start_typing", () => {
-            setIsTyping(true);
-        });
+            s.on("start_typing", () => {
+                setIsTyping(true);
+            });
 
-        s.on("stop_typing", () => {
-            setIsTyping(false);
-        });
+            s.on("stop_typing", () => {
+                setIsTyping(false);
+            });
+
+            s.on("edit_message", (editedMessage) => {
+                setMessages((prevMessages) =>
+                    prevMessages.map((msg) =>
+                        msg.id === editedMessage.id ? editedMessage : msg
+                    )
+                );
+            });
+        }
 
         return () => {
-            s.disconnect();
+            if (s) {
+                s.disconnect();
+            }
         };
     }, []);
 
@@ -120,7 +134,41 @@ function App() {
             );
             return;
         }
-        socket.emit("message", { pfp, username, message, image });
+        const newMessage = {
+            id: uuidv4(),
+            pfp,
+            username,
+            message,
+            image,
+        };
+        socket.emit("message", newMessage);
+    };
+
+    const currentUser = localStorage.getItem("username");
+
+    const handleEditClick = (id) => {
+        if (editingMessage === id) {
+            setEditingMessage(null);
+        } else {
+            setEditingMessage(id);
+        }
+    };
+
+    const handleEditChange = (e, id) => {
+        setMessages(
+            messages.map((msg) =>
+                msg.id === id ? { ...msg, message: e.target.value } : msg
+            )
+        );
+        const updatedMessages = messages.map((msg) =>
+            msg.id === id ? { ...msg, message: e.target.value } : msg
+        );
+        setMessages(updatedMessages);
+
+        const editedMessage = updatedMessages.find((msg) => msg.id === id);
+        if (editedMessage) {
+            socket.emit("edit_message", editedMessage);
+        }
     };
 
     useEffect(() => {
@@ -212,9 +260,9 @@ function App() {
                     )}
                 </div>
             </div>
-            {messages.map((msg, index) => (
-                <p
-                    key={index}
+            {messages.map((msg) => (
+                <div
+                    key={msg.id}
                     style={{ textAlign: "left" }}
                     className="message"
                 >
@@ -229,10 +277,28 @@ function App() {
                         <strong className="strong">{msg.username}</strong>
                         <br />
                         <span style={{ marginLeft: "50px" }}>
-                            {msg.message}
+                            {editingMessage === msg.id ? (
+                                <input
+                                    className="editInput"
+                                    value={msg.message}
+                                    onChange={(e) =>
+                                        handleEditChange(e, msg.id)
+                                    }
+                                />
+                            ) : (
+                                msg.message
+                            )}
                         </span>
                     </span>
-                </p>
+                    {msg.username === currentUser && (
+                        <button
+                            className="editBtn"
+                            onClick={() => handleEditClick(msg.id)}
+                        >
+                            {editingMessage === msg.id ? "Save" : "Edit"}
+                        </button>
+                    )}
+                </div>
             ))}
             {isTyping && (
                 <div className="typingIndicator">
