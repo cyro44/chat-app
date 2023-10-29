@@ -185,7 +185,7 @@ input {
     overflow-wrap: break-word;
     width: calc(100vw - 32px);
     margin: 0;
-    transform: translateY(-25%);
+    transform: translate(21px, -35%);
 }
 
 .messageText {
