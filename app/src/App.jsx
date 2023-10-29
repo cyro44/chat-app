@@ -14,20 +14,25 @@ function App() {
     const [showFileInput, setShowFileInput] = useState(false);
     const [fileSelected, setFileSelected] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
+    const [typingUser, setTypingUser] = useState("");
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
 
+const currentUser = localStorage.getItem("username");
     const handleInput = useCallback(() => {
-        if (!isTyping) {
+        const username = localStorage.getItem("username");
+        if (!isTyping && username) {
             setIsTyping(true);
-            socket.emit("typing", { username });
+            socket.emit("start_typing", username);
         }
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
-            socket.emit("typing", { username });
+            if (username) {
+                socket.emit("stop_typing", username);
+            }
         }, 3000);
-    }, [isTyping, socket, username]);
+    }, [isTyping, socket]);
 
     useEffect(() => {
         if (message !== "") {
@@ -37,16 +42,22 @@ function App() {
 
     useEffect(() => {
         if (socket) {
-            socket.on("typing", () => {
-                setIsTyping(true);
-                setTimeout(() => setIsTyping(false), 3000);
+            socket.on("typing", (username) => {
+                if (username && username !== currentUser) { // Check if the username is not the current user
+                    setIsTyping(true);
+                    setTypingUser(username);
+                    setTimeout(() => setIsTyping(false), 3000);
+                } else {
+                    setIsTyping(false);
+                    setTypingUser("");
+                }
             });
-
+    
             return () => {
                 socket.off("typing");
             };
         }
-    }, [socket, isTyping]);
+    }, [socket, currentUser]);
 
     const handleFileInput = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -151,8 +162,6 @@ function App() {
         };
         socket.emit("message", newMessage);
     };
-
-    const currentUser = localStorage.getItem("username");
 
     const handleEdit = (id) => {
         if (editingMessage === id) {
@@ -344,9 +353,9 @@ function App() {
                     )}
                 </div>
             ))}
-            {isTyping && (
+            {isTyping && typingUser && (
                 <div className="typingIndicator">
-                    {isTyping && <p>Someone is typing...</p>}
+                    <p>{typingUser} is typing...</p>
                 </div>
             )}
             <input
