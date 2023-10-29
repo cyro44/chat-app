@@ -148,7 +148,7 @@ function App() {
 
     const currentUser = localStorage.getItem("username");
 
-    const handleEditClick = (id) => {
+    const handleEdit = (id) => {
         if (editingMessage === id) {
             setEditingMessage(null);
         } else {
@@ -174,17 +174,15 @@ function App() {
     };
 
     const handleDeleteClick = (id) => {
-        setMessages(
-            messages.filter((msg) => msg.id!== id)
-        );
-        const updatedMessages = messages.filter((msg) => msg.id!== id);
+        setMessages(messages.filter((msg) => msg.id !== id));
+        const updatedMessages = messages.filter((msg) => msg.id !== id);
         setMessages(updatedMessages);
 
         const deletedMessage = updatedMessages.find((msg) => msg.id === id);
         if (deletedMessage) {
             socket.emit("delete_message", deletedMessage);
         }
-    }
+    };
 
     useEffect(() => {
         const textBoxElement = document.getElementById("messageBox");
@@ -274,7 +272,9 @@ function App() {
                                 style={{ display: "none" }}
                             />
                             <label htmlFor="file" className="fileInputLabel">
-                                {fileSelected ? "File Selected" : "Choose a file"}
+                                {fileSelected
+                                    ? "File Selected"
+                                    : "Choose a file"}
                             </label>
                             <button
                                 onClick={() => {
@@ -312,6 +312,11 @@ function App() {
                                     onChange={(e) =>
                                         handleEditChange(e, msg.id)
                                     }
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            handleEdit(msg.id);
+                                        }
+                                    }}
                                 />
                             ) : (
                                 msg.message
@@ -321,7 +326,7 @@ function App() {
                     {msg.username === currentUser && (
                         <button
                             className="editBtn"
-                            onClick={() => handleEditClick(msg.id)}
+                            onClick={() => handleEdit(msg.id)}
                         >
                             {editingMessage === msg.id ? "Save" : "Edit"}
                         </button>
