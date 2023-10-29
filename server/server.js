@@ -37,6 +37,10 @@ io.on("connection", (socket) => {
     socket.on('edit_message', (editedMessage) => {
         io.emit('edit_message', editedMessage);
     });
+
+    socket.on('delete_message', (deletedMessage) => {
+        io.emit('delete_message', deletedMessage);
+    });
 });
 
 httpServer.listen(5173, () => console.log("Listening on port 5173"));

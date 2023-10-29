@@ -94,6 +94,12 @@ function App() {
                     )
                 );
             });
+
+            s.on("delete_message", (messageId) => {
+                setMessages((prevMessages) =>
+                    prevMessages.filter((msg) => msg.id !== messageId)
+                );
+            });
         }
 
         return () => {
@@ -173,15 +179,12 @@ function App() {
         }
     };
 
-    const handleDeleteClick = (id) => {
+    const handleDelete = (id) => {
         setMessages(messages.filter((msg) => msg.id !== id));
         const updatedMessages = messages.filter((msg) => msg.id !== id);
         setMessages(updatedMessages);
 
-        const deletedMessage = updatedMessages.find((msg) => msg.id === id);
-        if (deletedMessage) {
-            socket.emit("delete_message", deletedMessage);
-        }
+        socket.emit("delete_message", id);
     };
 
     useEffect(() => {
@@ -334,7 +337,7 @@ function App() {
                     {msg.username === currentUser && (
                         <button
                             className="deleteBtn"
-                            onClick={() => handleDeleteClick(msg.id)}
+                            onClick={() => handleDelete(msg.id)}
                         >
                             Delete
                         </button>

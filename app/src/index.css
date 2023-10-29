@@ -222,7 +222,7 @@ input {
 }
 
 .typingIndicator {
-    position: absolute;
+    position: fixed;
     bottom: 60px;
     margin-left: 25px;
 }
