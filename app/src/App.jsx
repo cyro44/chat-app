@@ -144,7 +144,6 @@ function App() {
         let username = localStorage.getItem("username");
         let pfp = localStorage.getItem("pfp");
 
-        // If the username or pfp is not set, show an error toast and return.
         if (!username || username === "" || !pfp || pfp === "") {
             if (!username || username === "") {
                 newToast(
@@ -165,8 +164,6 @@ function App() {
             return;
         }
 
-        // If the previous message's userId is the same as the current user's userId,
-        // set username and pfp to null.
         if (previousMessageUserId === currentUserId) {
             username = null;
             pfp = null;
