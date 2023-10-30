@@ -1,8 +1,8 @@
-import "./App.css";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { newToast } from "./util/toast";
+import { useCallback, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
+import "./App.css";
+import { newToast } from "./util/toast";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -18,7 +18,8 @@ function App() {
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
 
-const currentUser = localStorage.getItem("username");
+    const currentUser = localStorage.getItem("username");
+
     const handleInput = useCallback(() => {
         const username = localStorage.getItem("username");
         if (!isTyping && username) {
@@ -43,7 +44,8 @@ const currentUser = localStorage.getItem("username");
     useEffect(() => {
         if (socket) {
             socket.on("typing", (username) => {
-                if (username && username !== currentUser) { // Check if the username is not the current user
+                if (username && username !== currentUser) {
+                    // Check if the username is not the current user
                     setIsTyping(true);
                     setTypingUser(username);
                     setTimeout(() => setIsTyping(false), 3000);
@@ -52,7 +54,7 @@ const currentUser = localStorage.getItem("username");
                     setTypingUser("");
                 }
             });
-    
+
             return () => {
                 socket.off("typing");
             };
@@ -155,6 +157,7 @@ const currentUser = localStorage.getItem("username");
         }
         const newMessage = {
             id: uuidv4(),
+            userId: currentUserId,
             pfp,
             username,
             message,
@@ -212,6 +215,9 @@ const currentUser = localStorage.getItem("username");
         setShowModal(!showModal);
     };
 
+    const currentUserId = localStorage.getItem("userId");
+    let userId;
+
     return (
         <>
             <button className="settingsBtn" onClick={toggleModal}>
@@ -241,6 +247,8 @@ const currentUser = localStorage.getItem("username");
                                     username.length <= 18
                                 ) {
                                     localStorage.setItem("username", username);
+                                    userId = uuidv4();
+                                    localStorage.setItem("userId", userId);
                                     newToast(
                                         "Done!",
                                         "Username set to " + username,
@@ -335,7 +343,7 @@ const currentUser = localStorage.getItem("username");
                             )}
                         </span>
                     </span>
-                    {msg.username === currentUser && (
+                    {msg.userId === currentUserId && (
                         <button
                             className="editBtn"
                             onClick={() => handleEdit(msg.id)}
@@ -343,7 +351,7 @@ const currentUser = localStorage.getItem("username");
                             {editingMessage === msg.id ? "Save" : "Edit"}
                         </button>
                     )}
-                    {msg.username === currentUser && (
+                    {msg.userId === currentUserId && (
                         <button
                             className="deleteBtn"
                             onClick={() => handleDelete(msg.id)}
