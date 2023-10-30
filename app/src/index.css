@@ -213,12 +213,12 @@ input {
     position: absolute;
     right: 50px;
     padding: 10px;
-    transform: translate(-70px, 5px);
+    transform: translate(-50px, 5px);
     z-index: -1;
 }
 
 .deleteBtn:active {
-    transform: translate(-60px, 5px);
+    transform: translate(-50px, 5px);
 }
 
 .typingIndicator {

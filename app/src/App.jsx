@@ -365,7 +365,11 @@ function App() {
                             className="editBtn"
                             onClick={() => handleEdit(msg.id)}
                         >
-                            {editingMessage === msg.id ? "Save" : "Edit"}
+                            {editingMessage === msg.id ? (
+                                "Save"
+                            ) : (
+                                <i className="fa-solid fa-pen-to-square"></i>
+                            )}
                         </button>
                     )}
                     {msg.userId === currentUserId && (
@@ -373,7 +377,7 @@ function App() {
                             className="deleteBtn"
                             onClick={() => handleDelete(msg.id)}
                         >
-                            Delete
+                            <i className="fa-solid fa-trash"></i>
                         </button>
                     )}
                 </div>
