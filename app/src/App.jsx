@@ -45,7 +45,6 @@ function App() {
         if (socket) {
             socket.on("typing", (username) => {
                 if (username && username !== currentUser) {
-                    // Check if the username is not the current user
                     setIsTyping(true);
                     setTypingUser(username);
                     setTimeout(() => setIsTyping(false), 3000);
@@ -140,21 +139,40 @@ function App() {
     };
 
     const sendMessage = (message) => {
-        const username = localStorage.getItem("username");
-        const pfp = localStorage.getItem("pfp");
+        const previousMessageUserId = messages[messages.length - 1]?.userId;
+        const currentUserId = localStorage.getItem("userId");
+        let username = localStorage.getItem("username");
+        let pfp = localStorage.getItem("pfp");
+
+        // If the username or pfp is not set, show an error toast and return.
+        if (!username || username === "" || !pfp || pfp === "") {
+            if (!username || username === "") {
+                newToast(
+                    "Error!",
+                    "Please set your username first",
+                    "error",
+                    2500
+                );
+            }
+            if (!pfp || pfp === "") {
+                newToast(
+                    "Error!",
+                    "Please set your profile picture first",
+                    "error",
+                    2500
+                );
+            }
+            return;
+        }
+
+        // If the previous message's userId is the same as the current user's userId,
+        // set username and pfp to null.
+        if (previousMessageUserId === currentUserId) {
+            username = null;
+            pfp = null;
+        }
+
         const image = selectedFile ? URL.createObjectURL(selectedFile) : null;
-        if (!username || username === "") {
-            newToast("Error!", "Please set your username first", "error", 2500);
-            return;
-        }
-        if (!pfp || pfp === null) {
-            newToast(
-                "Error!",
-                "Please set your profile picture first",
-                "error"
-            );
-            return;
-        }
         const newMessage = {
             id: uuidv4(),
             userId: currentUserId,
@@ -322,7 +340,9 @@ function App() {
                                 alt="Profile picture"
                             />
                         )}
-                        <strong className="strong">{msg.username}</strong>
+                        {msg.username && (
+                            <strong className="strong">{msg.username}</strong>
+                        )}
                         <br />
                         <span style={{ marginLeft: "50px" }}>
                             {editingMessage === msg.id ? (
