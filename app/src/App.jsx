@@ -207,9 +207,26 @@ function App() {
     };
 
     const handleDelete = (id) => {
-        setMessages(messages.filter((msg) => msg.id !== id));
+        const messageIndex = messages.findIndex((msg) => msg.id === id);
+        const deletedMessage = messages[messageIndex];
+        const nextMessage = messages[messageIndex + 1];
+    
         const updatedMessages = messages.filter((msg) => msg.id !== id);
         setMessages(updatedMessages);
+
+        if (deletedMessage.userId === currentUserId && nextMessage && nextMessage.userId === currentUserId) {
+            const updatedNextMessage = {
+                ...nextMessage,
+                username: localStorage.getItem("username"),
+                pfp: localStorage.getItem("pfp"),
+            };
+
+            const nextMessageIndex = updatedMessages.findIndex((msg) => msg.id === nextMessage.id);
+            updatedMessages[nextMessageIndex] = updatedNextMessage;
+            setMessages(updatedMessages);
+
+            socket.emit("edit_message", updatedNextMessage);
+        }
 
         socket.emit("delete_message", id);
     };
