@@ -19,6 +19,8 @@ const io = new Server(httpServer, {
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
 
+const users = new Map();
+
 io.on("connection", (socket) => {
     console.log("Client connected");
 
@@ -26,8 +28,15 @@ io.on("connection", (socket) => {
         io.emit("message", messageObject);
     });
 
+    socket.on("set_username", (username) => {
+        users.set(socket.id, username);
+    });
+
     socket.on("disconnect", () => {
         console.log("Client disconnected");
+        const username = users.get(socket.id);
+        io.emit("user_disconnected", username);
+        users.delete(socket.id);
     });
 
     socket.on("typing", (username) => {

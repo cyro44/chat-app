@@ -19,6 +19,7 @@ function App() {
     const [editingMessage, setEditingMessage] = useState(null);
 
     const currentUser = localStorage.getItem("username");
+    const currentUserId = localStorage.getItem("userId");
 
     const handleInput = useCallback(() => {
         const username = localStorage.getItem("username");
@@ -43,22 +44,34 @@ function App() {
 
     useEffect(() => {
         if (socket) {
+            let typingTimeout;
+    
             socket.on("typing", (username) => {
                 if (username && username !== currentUser) {
                     setIsTyping(true);
                     setTypingUser(username);
-                    setTimeout(() => setIsTyping(false), 3000);
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => setIsTyping(false), 3000);
                 } else {
                     setIsTyping(false);
                     setTypingUser("");
                 }
             });
-
+    
+            socket.on("user_disconnected", (username) => {
+                if (username === typingUser) {
+                    clearTimeout(typingTimeout);
+                    setIsTyping(false);
+                    setTypingUser("");
+                }
+            });
+    
             return () => {
                 socket.off("typing");
+                socket.off("user_disconnected");
             };
         }
-    }, [socket, currentUser]);
+    }, [socket, currentUser, typingUser]);
 
     const handleFileInput = (e) => {
         setSelectedFile(e.target.files[0]);
@@ -91,12 +104,14 @@ function App() {
                 setMessages((prevMessages) => [...prevMessages, messageObject]);
             });
 
-            s.on("start_typing", () => {
-                setIsTyping(true);
+            s.on("start_typing", (username) => {
+                setTypingUser(username);
             });
-
-            s.on("stop_typing", () => {
-                setIsTyping(false);
+    
+            s.on("stop_typing", (username) => {
+                if (typingUser === username) {
+                    setTypingUser("");
+                }
             });
 
             s.on("edit_message", (editedMessage) => {
@@ -119,7 +134,7 @@ function App() {
                 s.disconnect();
             }
         };
-    }, []);
+    }, [typingUser]);
 
     const handleChange = (e) => {
         if (e.key === "Enter") {
@@ -165,7 +180,6 @@ function App() {
 
     const sendMessage = (message) => {
         const previousMessageUserId = messages[messages.length - 1]?.userId;
-        const currentUserId = localStorage.getItem("userId");
         let username = localStorage.getItem("username");
         let pfp = localStorage.getItem("pfp");
 
@@ -284,7 +298,6 @@ function App() {
         setShowModal(!showModal);
     };
 
-    const currentUserId = localStorage.getItem("userId");
     let previousUserId = null;
     let userId;
 
@@ -316,6 +329,7 @@ function App() {
                                     username.length >= 4 &&
                                     username.length <= 18
                                 ) {
+                                    socket.emit("set_username", username);
                                     localStorage.setItem("username", username);
                                     userId = uuidv4();
                                     localStorage.setItem("userId", userId);
@@ -434,11 +448,7 @@ function App() {
                                 className="editBtn"
                                 onClick={() => handleEdit(msg.id)}
                             >
-                                {editingMessage === msg.id ? (
-                                    "Save"
-                                ) : (
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                )}
+                                <i className="fa-solid fa-pen-to-square"></i>
                             </button>
                         )}
                         {msg.userId === currentUserId && (
