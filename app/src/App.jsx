@@ -199,6 +199,7 @@ function App() {
             id: uuidv4(),
             userId: currentUserId,
             date: new Date(),
+            edited: false,
             pfp,
             username,
             message,
@@ -218,11 +219,15 @@ function App() {
     const handleEditChange = (e, id) => {
         setMessages(
             messages.map((msg) =>
-                msg.id === id ? { ...msg, message: e.target.value } : msg
+                msg.id === id
+                    ? { ...msg, message: e.target.value, edited: true }
+                    : message
             )
         );
         const updatedMessages = messages.map((msg) =>
-            msg.id === id ? { ...msg, message: e.target.value } : msg
+            msg.id === id
+                ? { ...msg, message: e.target.value, edited: true }
+                : msg
         );
         setMessages(updatedMessages);
 
@@ -280,6 +285,7 @@ function App() {
     };
 
     const currentUserId = localStorage.getItem("userId");
+    let previousUserId = null;
     let userId;
 
     return (
@@ -372,69 +378,80 @@ function App() {
                     )}
                 </div>
             </div>
-            {messages.map((msg) => (
-                <div
-                    key={msg.id}
-                    style={{ textAlign: "left" }}
-                    className="message"
-                >
-                    <span className="messageText">
-                        {msg.pfp && (
-                            <img
-                                className="pfp"
-                                src={msg.pfp}
-                                alt="Profile picture"
-                            />
-                        )}
-                        {msg.username && (
-                            <strong className="strong">{msg.username}</strong>
-                        )}
-                        <span className="messageDate">
-                            {formatDate(msg.date)}
-                        </span>{" "}
-                        {/* Use the helper function here */}
-                        <br />
-                        <span style={{ marginLeft: "50px" }}>
-                            {editingMessage === msg.id ? (
-                                <input
-                                    className="editInput"
-                                    value={msg.message}
-                                    onChange={(e) =>
-                                        handleEditChange(e, msg.id)
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") {
-                                            handleEdit(msg.id);
-                                        }
-                                    }}
+            {messages.map((msg, index) => {
+                const showDate = index === 0 || msg.userId !== previousUserId;
+                previousUserId = msg.userId;
+
+                return (
+                    <div
+                        key={msg.id}
+                        style={{ textAlign: "left" }}
+                        className="message"
+                    >
+                        <span className="messageText">
+                            {msg.pfp && (
+                                <img
+                                    className="pfp"
+                                    src={msg.pfp}
+                                    alt="Profile picture"
                                 />
-                            ) : (
-                                msg.message
+                            )}
+                            {msg.username && (
+                                <strong className="strong">
+                                    {msg.username}
+                                </strong>
+                            )}
+                            {showDate && (
+                                <span className="messageDate">
+                                    {formatDate(msg.date)}
+                                </span>
+                            )}
+                            <br />
+                            <span style={{ marginLeft: "50px" }}>
+                                {editingMessage === msg.id ? (
+                                    <input
+                                        className="editInput"
+                                        value={msg.message}
+                                        onChange={(e) =>
+                                            handleEditChange(e, msg.id)
+                                        }
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleEdit(msg.id);
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    msg.message
+                                )}
+                            </span>
+                            {msg.edited && (
+                                <span className="edited">(edited)</span>
                             )}
                         </span>
-                    </span>
-                    {msg.userId === currentUserId && (
-                        <button
-                            className="editBtn"
-                            onClick={() => handleEdit(msg.id)}
-                        >
-                            {editingMessage === msg.id ? (
-                                "Save"
-                            ) : (
-                                <i className="fa-solid fa-pen-to-square"></i>
-                            )}
-                        </button>
-                    )}
-                    {msg.userId === currentUserId && (
-                        <button
-                            className="deleteBtn"
-                            onClick={() => handleDelete(msg.id)}
-                        >
-                            <i className="fa-solid fa-trash"></i>
-                        </button>
-                    )}
-                </div>
-            ))}
+                        {msg.userId === currentUserId && (
+                            <button
+                                className="editBtn"
+                                onClick={() => handleEdit(msg.id)}
+                            >
+                                {editingMessage === msg.id ? (
+                                    "Save"
+                                ) : (
+                                    <i className="fa-solid fa-pen-to-square"></i>
+                                )}
+                            </button>
+                        )}
+                        {msg.userId === currentUserId && (
+                            <button
+                                className="deleteBtn"
+                                onClick={() => handleDelete(msg.id)}
+                            >
+                                <i className="fa-solid fa-trash"></i>
+                            </button>
+                        )}
+                    </div>
+                );
+            })}
             {isTyping && typingUser && (
                 <div className="typingIndicator">
                     <p>{typingUser} is typing...</p>

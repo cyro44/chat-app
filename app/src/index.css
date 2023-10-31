@@ -198,6 +198,12 @@ input {
     margin-left: 10px;
 }
 
+.edited {
+    font-size: 10px;
+    color: #888;
+    margin-left: 10px;
+}
+
 .editBtn {
     position: absolute;
     right: 50px;
