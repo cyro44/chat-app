@@ -138,6 +138,31 @@ function App() {
         }
     };
 
+    const formatDate = (date) => {
+        const now = new Date();
+        const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const yesterday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() - 1
+        );
+        const messageDate = new Date(date);
+
+        if (messageDate >= today) {
+            return `Today at ${messageDate.getHours()}:${messageDate.getMinutes()}`;
+        } else if (messageDate >= yesterday) {
+            return `Yesterday at ${messageDate.getHours()}:${messageDate.getMinutes()}`;
+        } else {
+            return `${messageDate.getHours()}:${messageDate.getMinutes()} on ${messageDate.getDate()}/${
+                messageDate.getMonth() + 1
+            }/${messageDate.getFullYear()}`;
+        }
+    };
+
     const sendMessage = (message) => {
         const previousMessageUserId = messages[messages.length - 1]?.userId;
         const currentUserId = localStorage.getItem("userId");
@@ -173,6 +198,7 @@ function App() {
         const newMessage = {
             id: uuidv4(),
             userId: currentUserId,
+            date: new Date(),
             pfp,
             username,
             message,
@@ -210,18 +236,24 @@ function App() {
         const messageIndex = messages.findIndex((msg) => msg.id === id);
         const deletedMessage = messages[messageIndex];
         const nextMessage = messages[messageIndex + 1];
-    
+
         const updatedMessages = messages.filter((msg) => msg.id !== id);
         setMessages(updatedMessages);
 
-        if (deletedMessage.userId === currentUserId && nextMessage && nextMessage.userId === currentUserId) {
+        if (
+            deletedMessage.userId === currentUserId &&
+            nextMessage &&
+            nextMessage.userId === currentUserId
+        ) {
             const updatedNextMessage = {
                 ...nextMessage,
                 username: localStorage.getItem("username"),
                 pfp: localStorage.getItem("pfp"),
             };
 
-            const nextMessageIndex = updatedMessages.findIndex((msg) => msg.id === nextMessage.id);
+            const nextMessageIndex = updatedMessages.findIndex(
+                (msg) => msg.id === nextMessage.id
+            );
             updatedMessages[nextMessageIndex] = updatedNextMessage;
             setMessages(updatedMessages);
 
@@ -357,6 +389,10 @@ function App() {
                         {msg.username && (
                             <strong className="strong">{msg.username}</strong>
                         )}
+                        <span className="messageDate">
+                            {formatDate(msg.date)}
+                        </span>{" "}
+                        {/* Use the helper function here */}
                         <br />
                         <span style={{ marginLeft: "50px" }}>
                             {editingMessage === msg.id ? (
