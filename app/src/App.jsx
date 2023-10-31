@@ -30,6 +30,7 @@ function App() {
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
+            setTypingUser("");
             if (username) {
                 socket.emit("stop_typing", username);
             }
