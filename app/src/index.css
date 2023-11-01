@@ -192,7 +192,8 @@ input {
 }
 
 .messages::-webkit-scrollbar-track {
-    background: transparent;
+    background: #1a1a1a;
+    border-radius: 8px;
 }
 
 .messages::-webkit-scrollbar-thumb {
