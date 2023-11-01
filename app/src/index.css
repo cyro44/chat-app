@@ -273,7 +273,7 @@ input {
 .typingIndicator {
     position: fixed;
     bottom: 60px;
-    margin-left: 25px;
+    margin-left: 55px;
 }
 
 .close {
