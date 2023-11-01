@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { newToast } from "./util/toast";
+import io from "socket.io-client";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -434,7 +434,11 @@ function App() {
                                 <span style={{ marginLeft: "50px" }}>
                                     {editingMessage === msg.id ? (
                                         <input
-                                            className="editInput"
+                                            className={
+                                                msg.username && msg.pfp
+                                                    ? "editInput"
+                                                    : "editInputModified"
+                                            }
                                             value={msg.message}
                                             onChange={(e) =>
                                                 handleEditChange(e, msg.id)

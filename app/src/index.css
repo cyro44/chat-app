@@ -212,7 +212,8 @@ input {
     overflow-wrap: break-word;
     width: calc(100vw - 32px);
     margin-left: 25px;
-    transform: translate(21px, -5%);
+    margin-bottom: 10px;
+    transform: translate(21px, calc(-5% + 20px));
 }
 
 .messageText {
@@ -235,29 +236,38 @@ input {
     position: absolute;
     right: 70px;
     padding: 10px;
-    transform: translateY(5px);
+    transform: translateY(-15px);
 }
 
 .editBtn:active {
-    transform: translateY(5px);
+    transform: translateY(-15px);
 }
 
 .editInput {
     position: absolute;
     top: 60px;
     left: calc(50% + 10px);
+    width: 91vw;
+    margin-left: -25px;
+}
+
+.editInputModified {
+    position: absolute;
+    left: calc(50% + 10px);
+    width: 91vw;
+    margin-left: -25px;
+    top: 10px;
 }
 
 .deleteBtn {
     position: absolute;
     right: 70px;
     padding: 10px;
-    transform: translate(-50px, 5px);
-    z-index: -1;
+    transform: translate(-50px, -15px);
 }
 
 .deleteBtn:active {
-    transform: translate(-50px, 5px);
+    transform: translate(-50px, -15px);
 }
 
 .typingIndicator {
