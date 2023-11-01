@@ -178,6 +178,32 @@ input {
     font-size: 16px;
 }
 
+.messages {
+    height: calc(100vh - 75px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+
+.messages::-webkit-scrollbar {
+    width: 12px;
+    border-radius: 8px;
+}
+
+.messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 8px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .message {
     position: relative;
     left: 0;
@@ -206,7 +232,7 @@ input {
 
 .editBtn {
     position: absolute;
-    right: 50px;
+    right: 70px;
     padding: 10px;
     transform: translateY(5px);
 }
@@ -223,7 +249,7 @@ input {
 
 .deleteBtn {
     position: absolute;
-    right: 50px;
+    right: 70px;
     padding: 10px;
     transform: translate(-50px, 5px);
     z-index: -1;
@@ -270,11 +296,12 @@ input {
 .settingsBtn {
     position: fixed;
     top: 10px;
-    right: 10px;
+    right: 15px;
     z-index: 2;
 }
 
-.usernameContainer, .profilePicContainer {
+.usernameContainer,
+.profilePicContainer {
     display: inline-block;
     width: 50%;
     vertical-align: top;

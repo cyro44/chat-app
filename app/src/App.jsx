@@ -45,7 +45,7 @@ function App() {
     useEffect(() => {
         if (socket) {
             let typingTimeout;
-    
+
             socket.on("typing", (username) => {
                 if (username && username !== currentUser) {
                     setIsTyping(true);
@@ -57,7 +57,7 @@ function App() {
                     setTypingUser("");
                 }
             });
-    
+
             socket.on("user_disconnected", (username) => {
                 if (username === typingUser) {
                     clearTimeout(typingTimeout);
@@ -65,7 +65,7 @@ function App() {
                     setTypingUser("");
                 }
             });
-    
+
             return () => {
                 socket.off("typing");
                 socket.off("user_disconnected");
@@ -107,7 +107,7 @@ function App() {
             s.on("start_typing", (username) => {
                 setTypingUser(username);
             });
-    
+
             s.on("stop_typing", (username) => {
                 if (typingUser === username) {
                     setTypingUser("");
@@ -313,7 +313,7 @@ function App() {
                 <span className="close" onClick={toggleModal}>
                     <i className="fa-solid fa-square-xmark"></i>
                 </span>
-                <h1 style={{textAlign: "center"}}>Settings</h1>
+                <h1 style={{ textAlign: "center" }}>Settings</h1>
                 <div className="usernameContainer">
                     <h2 className="usernameH2">Set or Change Your Username</h2>
                     <input
@@ -392,76 +392,80 @@ function App() {
                     )}
                 </div>
             </div>
-            {messages.map((msg, index) => {
-                const showDate = index === 0 || msg.userId !== previousUserId;
-                previousUserId = msg.userId;
+            <div className="messages">
+                {messages.map((msg, index) => {
+                    const showDate =
+                        index === 0 || msg.userId !== previousUserId;
+                    previousUserId = msg.userId;
 
-                return (
-                    <div
-                        key={msg.id}
-                        style={{ textAlign: "left" }}
-                        className="message"
-                    >
-                        <span className="messageText">
-                            {msg.pfp && (
-                                <img
-                                    className="pfp"
-                                    src={msg.pfp}
-                                    alt="Profile picture"
-                                />
-                            )}
-                            {msg.username && (
-                                <strong className="strong">
-                                    {msg.username}
-                                </strong>
-                            )}
-                            {showDate && (
-                                <span className="messageDate">
-                                    {formatDate(msg.date)}
-                                </span>
-                            )}
-                            <br />
-                            <span style={{ marginLeft: "50px" }}>
-                                {editingMessage === msg.id ? (
-                                    <input
-                                        className="editInput"
-                                        value={msg.message}
-                                        onChange={(e) =>
-                                            handleEditChange(e, msg.id)
-                                        }
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                handleEdit(msg.id);
-                                            }
-                                        }}
+                    return (
+                        <div
+                            key={msg.id}
+                            style={{ textAlign: "left" }}
+                            className="message"
+                        >
+                            <span className="messageText">
+                                {msg.pfp && (
+                                    <img
+                                        className="pfp"
+                                        src={msg.pfp}
+                                        alt="Profile picture"
                                     />
-                                ) : (
-                                    msg.message
+                                )}
+                                {msg.username && (
+                                    <strong className="strong">
+                                        {msg.username}
+                                    </strong>
+                                )}
+                                {showDate && (
+                                    <span className="messageDate">
+                                        {formatDate(msg.date)}
+                                    </span>
+                                )}
+                                <br />
+                                <span style={{ marginLeft: "50px" }}>
+                                    {editingMessage === msg.id ? (
+                                        <input
+                                            className="editInput"
+                                            value={msg.message}
+                                            onChange={(e) =>
+                                                handleEditChange(e, msg.id)
+                                            }
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    handleEdit(msg.id);
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        msg.message
+                                    )}
+                                </span>
+                                {msg.edited && (
+                                    <span className="edited">(edited)</span>
                                 )}
                             </span>
-                            {msg.edited && (
-                                <span className="edited">(edited)</span>
+                            {msg.userId === currentUserId && (
+                                <button
+                                    className="editBtn"
+                                    onClick={() => handleEdit(msg.id)}
+                                >
+                                    <i className="fa-solid fa-pen-to-square"></i>
+                                </button>
                             )}
-                        </span>
-                        {msg.userId === currentUserId && (
-                            <button
-                                className="editBtn"
-                                onClick={() => handleEdit(msg.id)}
-                            >
-                                <i className="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        )}
-                        {msg.userId === currentUserId && (
-                            <button
-                                className="deleteBtn"
-                                onClick={() => handleDelete(msg.id)}
-                            >
-                                <i className="fa-solid fa-trash"></i>
-                            </button>
-                        )}
-                    </div>
-                );
-            })}
+                            {msg.userId === currentUserId && (
+                                <button
+                                    className="deleteBtn"
+                                    onClick={() => handleDelete(msg.id)}
+                                >
+                                    <i className="fa-solid fa-trash"></i>
+                                </button>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+
             {isTyping && typingUser && (
                 <div className="typingIndicator">
                     <p>{typingUser} is typing...</p>
