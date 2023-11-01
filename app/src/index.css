@@ -184,8 +184,8 @@ input {
     text-align: left;
     overflow-wrap: break-word;
     width: calc(100vw - 32px);
-    margin: 0;
-    transform: translate(21px, -35%);
+    margin-left: 25px;
+    transform: translate(21px, -5%);
 }
 
 .messageText {
@@ -290,10 +290,9 @@ input {
     margin-left: 50px;
 }
 
-.usernameContainer input {
+.usernameInput {
     position: relative;
     width: 50%;
-    left: 65px;
     margin-top: 50px;
 }
 

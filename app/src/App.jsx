@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-import "./App.css";
 import { newToast } from "./util/toast";
 
 function App() {
@@ -314,7 +313,7 @@ function App() {
                 <span className="close" onClick={toggleModal}>
                     <i className="fa-solid fa-square-xmark"></i>
                 </span>
-                <h1>Settings</h1>
+                <h1 style={{textAlign: "center"}}>Settings</h1>
                 <div className="usernameContainer">
                     <h2 className="usernameH2">Set or Change Your Username</h2>
                     <input
