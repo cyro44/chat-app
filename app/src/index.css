@@ -179,7 +179,7 @@ input {
 }
 
 .messages {
-    height: calc(100vh - 75px);
+    height: calc(100vh - 70px);
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
