@@ -6,6 +6,7 @@ import { newToast } from "./util/toast";
 function App() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const messagesEndRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
     const [socket, setSocket] = useState(null);
@@ -178,6 +179,10 @@ function App() {
         }
     };
 
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    };
+
     const sendMessage = (message) => {
         const previousMessageUserId = messages[messages.length - 1]?.userId;
         let username = localStorage.getItem("username");
@@ -220,6 +225,9 @@ function App() {
             image,
         };
         socket.emit("message", newMessage);
+        setTimeout(() => {
+            scrollToBottom();
+        }, 100);
     };
 
     const handleEdit = (id) => {
@@ -392,7 +400,7 @@ function App() {
                     )}
                 </div>
             </div>
-            <div className="messages">
+            <div className="messages" ref={messagesEndRef}>
                 {messages.map((msg, index) => {
                     const showDate =
                         index === 0 || msg.userId !== previousUserId;
