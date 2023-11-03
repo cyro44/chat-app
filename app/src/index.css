@@ -212,12 +212,18 @@ input {
     overflow-wrap: break-word;
     width: calc(100vw - 32px);
     margin-left: 25px;
-    margin-bottom: 10px;
+    margin-bottom: -50px;
     transform: translate(21px, calc(-5% + 20px));
 }
 
 .messageText {
-    transform: translateY(-50%);
+    transform: translateY(-75%);
+}
+
+.messageTextText {
+    padding-left: 50px;
+    padding-right: 175px;
+    transform: translateY(-40px);
 }
 
 .messageDate {
@@ -236,11 +242,11 @@ input {
     position: absolute;
     right: 70px;
     padding: 10px;
-    transform: translateY(-15px);
+    transform: translateY(-100px);
 }
 
 .editBtn:active {
-    transform: translateY(-15px);
+    transform: translateY(-100px);
 }
 
 .editInput {
@@ -263,11 +269,11 @@ input {
     position: absolute;
     right: 70px;
     padding: 10px;
-    transform: translate(-50px, -15px);
+    transform: translate(-50px, -100px);
 }
 
 .deleteBtn:active {
-    transform: translate(-50px, -15px);
+    transform: translate(-50px, -100px);
 }
 
 .typingIndicator {

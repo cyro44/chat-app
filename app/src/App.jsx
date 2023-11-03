@@ -431,7 +431,7 @@ function App() {
                                     </span>
                                 )}
                                 <br />
-                                <span style={{ marginLeft: "50px" }}>
+                                <span style={{ marginLeft: "50px"}}>
                                     {editingMessage === msg.id ? (
                                         <input
                                             className={
@@ -447,31 +447,35 @@ function App() {
                                                 if (e.key === "Enter") {
                                                     handleEdit(msg.id);
                                                 }
+
+                                                if (e.key === "Escape") {
+                                                    setEditingMessage(null);
+                                                }
                                             }}
                                         />
                                     ) : (
-                                        msg.message
+                                        <p className="messageTextText">{msg.message}</p>
                                     )}
                                 </span>
                                 {msg.edited && (
                                     <span className="edited">(edited)</span>
                                 )}
                             </span>
-                            {msg.userId === currentUserId && (
-                                <button
-                                    className="editBtn"
-                                    onClick={() => handleEdit(msg.id)}
-                                >
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
-                            )}
-                            {msg.userId === currentUserId && (
-                                <button
-                                    className="deleteBtn"
-                                    onClick={() => handleDelete(msg.id)}
-                                >
-                                    <i className="fa-solid fa-trash"></i>
-                                </button>
+                            {msg.userId === currentUserId && editingMessage !== msg.id && (
+                                <>
+                                    <button
+                                        className="editBtn"
+                                        onClick={() => handleEdit(msg.id)}
+                                    >
+                                        <i className="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button
+                                        className="deleteBtn"
+                                        onClick={() => handleDelete(msg.id)}
+                                    >
+                                        <i className="fa-solid fa-trash"></i>
+                                    </button>
+                                </>
                             )}
                         </div>
                     );
