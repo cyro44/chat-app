@@ -221,9 +221,9 @@ input {
 }
 
 .messageTextText {
-    padding-left: 50px;
-    padding-right: 175px;
-    transform: translateY(-40px);
+    width: fit-content;
+    margin-right: 210px;
+    transform: translate(50px, -40px);
 }
 
 .messageDate {
@@ -232,48 +232,15 @@ input {
     margin-left: 10px;
 }
 
-.edited {
-    font-size: 10px;
-    color: #888;
-    margin-left: 10px;
-}
-
-.editBtn {
-    position: absolute;
-    right: 70px;
-    padding: 10px;
-    transform: translateY(-100px);
-}
-
-.editBtn:active {
-    transform: translateY(-100px);
-}
-
-.editInput {
-    position: absolute;
-    top: 60px;
-    left: calc(50% + 10px);
-    width: calc(100vw - 200px);
-    margin-left: -40px;
-}
-
-.editInputModified {
-    position: absolute;
-    left: calc(50% + 10px);
-    width: 91vw;
-    margin-left: -25px;
-    top: 10px;
-}
-
 .deleteBtn {
     position: absolute;
     right: 70px;
     padding: 10px;
-    transform: translate(-50px, -100px);
+    transform: translateY(-90px);
 }
 
 .deleteBtn:active {
-    transform: translate(-50px, -100px);
+    transform: translateY(-90px);
 }
 
 .typingIndicator {

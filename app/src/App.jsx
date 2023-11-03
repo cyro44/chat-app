@@ -6,6 +6,7 @@ import io from "socket.io-client";
 function App() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const messageRef = useRef(null);
     const messagesEndRef = useRef(null);
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
@@ -218,7 +219,6 @@ function App() {
             id: uuidv4(),
             userId: currentUserId,
             date: new Date(),
-            edited: false,
             pfp,
             username,
             message,
@@ -238,17 +238,23 @@ function App() {
         }
     };
 
+    const handleKeyPress = (e, id) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const messageElement = document.getElementById(`message-`);
+            if (messageElement) {
+                const updatedMessage = messageElement.innerText;
+                handleEditChange({ target: { value: updatedMessage } }, id);
+                handleEdit(id);
+            }
+        }
+    };
+
     const handleEditChange = (e, id) => {
-        setMessages(
-            messages.map((msg) =>
-                msg.id === id
-                    ? { ...msg, message: e.target.value, edited: true }
-                    : message
-            )
-        );
+        const updatedMessage = e.currentTarget.textContent;
         const updatedMessages = messages.map((msg) =>
             msg.id === id
-                ? { ...msg, message: e.target.value, edited: true }
+                ? { ...msg, message: updatedMessage }
                 : msg
         );
         setMessages(updatedMessages);
@@ -431,52 +437,60 @@ function App() {
                                     </span>
                                 )}
                                 <br />
-                                <span style={{ marginLeft: "50px"}}>
-                                    {editingMessage === msg.id ? (
-                                        <input
-                                            className={
-                                                msg.username && msg.pfp
-                                                    ? "editInput"
-                                                    : "editInputModified"
+                                <span style={{ marginLeft: "50px" }}>
+                                    <p
+                                        ref={messageRef}
+                                        className="messageTextText"
+                                        contentEditable
+                                        id={`message-${msg.id}`}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                handleKeyPress(e, msg.id);
                                             }
-                                            value={msg.message}
-                                            onChange={(e) =>
-                                                handleEditChange(e, msg.id)
-                                            }
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    handleEdit(msg.id);
-                                                }
+                                        }}
+                                        onInput={(e) => {
+                                            const selection =
+                                                window.getSelection();
+                                            const range =
+                                                selection.getRangeAt(0);
+                                            const { startOffset } = range;
 
-                                                if (e.key === "Escape") {
-                                                    setEditingMessage(null);
-                                                }
-                                            }}
-                                        />
-                                    ) : (
-                                        <p className="messageTextText">{msg.message}</p>
-                                    )}
+                                            handleEditChange(e, msg.id);
+
+                                            requestAnimationFrame(() => {
+                                                const newRange =
+                                                    document.createRange();
+                                                newRange.setStart(
+                                                    messageRef.current
+                                                        .childNodes[0],
+                                                    startOffset
+                                                );
+                                                newRange.setEnd(
+                                                    messageRef.current
+                                                        .childNodes[0],
+                                                    startOffset
+                                                );
+                                                selection.removeAllRanges();
+                                                selection.addRange(newRange);
+                                            });
+                                        }}
+                                        suppressContentEditableWarning={true}
+                                        dangerouslySetInnerHTML={{
+                                            __html: msg.message,
+                                        }}
+                                    />
                                 </span>
-                                {msg.edited && (
-                                    <span className="edited">(edited)</span>
-                                )}
                             </span>
-                            {msg.userId === currentUserId && editingMessage !== msg.id && (
-                                <>
-                                    <button
-                                        className="editBtn"
-                                        onClick={() => handleEdit(msg.id)}
-                                    >
-                                        <i className="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                            {msg.userId === currentUserId &&
+                                editingMessage !== msg.id && (
                                     <button
                                         className="deleteBtn"
                                         onClick={() => handleDelete(msg.id)}
                                     >
                                         <i className="fa-solid fa-trash"></i>
                                     </button>
-                                </>
-                            )}
+                                )}
                         </div>
                     );
                 })}

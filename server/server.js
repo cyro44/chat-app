@@ -51,8 +51,8 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("typing", null);
     });
 
-    socket.on("edit_message", (editedMessage) => {
-        io.emit("edit_message", editedMessage);
+    socket.on('edit_message', (editedMessage) => {
+        socket.broadcast.emit('edit_message', editedMessage);
     });
 
     socket.on("delete_message", (deletedMessage) => {
