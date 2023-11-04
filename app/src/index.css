@@ -220,7 +220,12 @@ input {
     transform: translateY(-75%);
 }
 
+.breakAll {
+    word-break: break-all;
+}
+
 .messageTextText {
+    /* word-break: break-all; */
     width: fit-content;
     margin-right: 210px;
     transform: translate(50px, -40px);

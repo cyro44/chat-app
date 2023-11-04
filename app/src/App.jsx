@@ -466,8 +466,12 @@ function App() {
                                 <br />
                                 <span style={{ marginLeft: "50px" }}>
                                     <p
+                                        className={`messageTextText ${
+                                            !msg.message.includes(" ")
+                                                ? "breakAll"
+                                                : ""
+                                        }`}
                                         ref={messageRef}
-                                        className="messageTextText"
                                         contentEditable
                                         id={`message-${msg.id}`}
                                         onKeyDown={(e) => {
