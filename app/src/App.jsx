@@ -368,7 +368,8 @@ function App() {
                             if (e.key === "Enter") {
                                 if (
                                     username.length >= 4 &&
-                                    username.length <= 18
+                                    username.length <= 18 &&
+                                    !/\s/.test(username)
                                 ) {
                                     socket.emit("set_username", username);
                                     localStorage.setItem("username", username);
@@ -383,7 +384,7 @@ function App() {
                                 } else {
                                     newToast(
                                         "Error!",
-                                        "Username must be between 4 and 18 characters",
+                                        "Username must be between 4 and 18 characters and cannot contain spaces",
                                         "error"
                                     );
                                 }
