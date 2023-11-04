@@ -22,6 +22,14 @@ function App() {
     const currentUser = localStorage.getItem("username");
     const currentUserId = localStorage.getItem("userId");
 
+    const isUserAtBottom = () => {
+        return (
+            messagesEndRef.current.scrollHeight -
+                messagesEndRef.current.scrollTop ===
+            messagesEndRef.current.clientHeight
+        );
+    };
+
     const handleInput = useCallback(() => {
         const username = localStorage.getItem("username");
         if (!isTyping && username) {
@@ -104,6 +112,13 @@ function App() {
         if (s) {
             s.on("message", (messageObject) => {
                 setMessages((prevMessages) => [...prevMessages, messageObject]);
+
+                const userAtBottom = isUserAtBottom();
+                if (userAtBottom) {
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
+                }
             });
 
             s.on("start_typing", (username) => {
@@ -224,10 +239,13 @@ function App() {
             message,
             image,
         };
+        const userAtBottom = isUserAtBottom();
         socket.emit("message", newMessage);
-        setTimeout(() => {
-            scrollToBottom();
-        }, 100);
+        if (userAtBottom) {
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+        }
     };
 
     const handleEdit = (id) => {
