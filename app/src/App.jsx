@@ -253,9 +253,7 @@ function App() {
     const handleEditChange = (e, id) => {
         const updatedMessage = e.currentTarget.textContent;
         const updatedMessages = messages.map((msg) =>
-            msg.id === id
-                ? { ...msg, message: updatedMessage }
-                : msg
+            msg.id === id ? { ...msg, message: updatedMessage } : msg
         );
         setMessages(updatedMessages);
 
@@ -314,6 +312,17 @@ function App() {
 
     let previousUserId = null;
     let userId;
+
+    const isFirstVisit = localStorage.getItem("isFirstVisit");
+    if (!isFirstVisit) {
+        newToast(
+            "Welcome!",
+            "This is your first time here. Click on your own message to edit and click the trash icon to delete. Remember to set a username and profile picture! Enjoy chatting!",
+            "info",
+            7500
+        );
+        localStorage.setItem("isFirstVisit", "false");
+    }
 
     return (
         <>
