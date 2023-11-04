@@ -19,6 +19,8 @@ function App() {
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
 
+    // SUPPORT MULTI-LINE MESSAGES
+
     const currentUser = localStorage.getItem("username");
     const currentUserId = localStorage.getItem("userId");
 
@@ -474,6 +476,8 @@ function App() {
                                         }`}
                                         ref={messageRef}
                                         contentEditable
+                                        spellCheck="false"
+                                        autoComplete="off"
                                         id={`message-${msg.id}`}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") {
