@@ -79,8 +79,17 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("edit_message", editedMessage);
     });
 
-    socket.on("delete_message", (deletedMessage) => {
-        io.emit("delete_message", deletedMessage);
+    socket.on("delete_message", (messageId) => {
+        let messages = [];
+        if (fs.existsSync(messagesFilePath)) {
+            const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+            if (fileContent) {
+                messages = JSON.parse(fileContent);
+            }
+        }
+        messages = messages.filter((message) => message.id !== messageId);
+        fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+        io.emit("delete_message", messageId);
     });
 });
 
