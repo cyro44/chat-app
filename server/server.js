@@ -3,6 +3,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,8 +25,19 @@ const users = new Map();
 io.on("connection", (socket) => {
     console.log("Client connected");
 
+    const messagesFilePath = path.join(__dirname, 'messages.json');
+    if (!fs.existsSync(messagesFilePath)) {
+        fs.writeFileSync(messagesFilePath, JSON.stringify([]));
+    }
+
+    const messages = JSON.parse(fs.readFileSync(messagesFilePath, 'utf-8'));
+    socket.emit("existing_messages", messages);
+
     socket.on("message", (messageObject) => {
         io.emit("message", messageObject);
+        const messages = JSON.parse(fs.readFileSync(messagesFilePath, 'utf-8'));
+        messages.push(messageObject);
+        fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
     });
 
     socket.on("set_username", (username) => {

@@ -121,6 +121,10 @@ function App() {
                 }
             });
 
+            s.on("existing_messages", (existingMessages) => {
+                setMessages(existingMessages);
+            });
+
             s.on("start_typing", (username) => {
                 setTypingUser(username);
             });
