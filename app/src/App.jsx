@@ -123,6 +123,9 @@ function App() {
 
             s.on("existing_messages", (existingMessages) => {
                 setMessages(existingMessages);
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 10);
             });
 
             s.on("start_typing", (username) => {
