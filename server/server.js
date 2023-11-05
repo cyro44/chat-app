@@ -25,17 +25,29 @@ const users = new Map();
 io.on("connection", (socket) => {
     console.log("Client connected");
 
-    const messagesFilePath = path.join(__dirname, 'messages.json');
+    const messagesFilePath = path.join(__dirname, "messages.json");
     if (!fs.existsSync(messagesFilePath)) {
         fs.writeFileSync(messagesFilePath, JSON.stringify([]));
     }
 
-    const messages = JSON.parse(fs.readFileSync(messagesFilePath, 'utf-8'));
+    let messages = [];
+    if (fs.existsSync(messagesFilePath)) {
+        const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+        if (fileContent) {
+            messages = JSON.parse(fileContent);
+        }
+    }
     socket.emit("existing_messages", messages);
 
     socket.on("message", (messageObject) => {
         io.emit("message", messageObject);
-        const messages = JSON.parse(fs.readFileSync(messagesFilePath, 'utf-8'));
+        let messages = [];
+        if (fs.existsSync(messagesFilePath)) {
+            const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+            if (fileContent) {
+                messages = JSON.parse(fileContent);
+            }
+        }
         messages.push(messageObject);
         fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
     });
@@ -63,8 +75,8 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("typing", null);
     });
 
-    socket.on('edit_message', (editedMessage) => {
-        socket.broadcast.emit('edit_message', editedMessage);
+    socket.on("edit_message", (editedMessage) => {
+        socket.broadcast.emit("edit_message", editedMessage);
     });
 
     socket.on("delete_message", (deletedMessage) => {
