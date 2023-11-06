@@ -266,8 +266,9 @@ function App() {
     const handleKeyPress = (e, id) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            const messageElement = document.getElementById(`message-`);
+            const messageElement = document.getElementById(`message-${id}`);
             if (messageElement) {
+                messageRef.current = messageElement;
                 const updatedMessage = messageElement.innerText;
                 handleEditChange({ target: { value: updatedMessage } }, id);
                 handleEdit(id);
@@ -491,6 +492,8 @@ function App() {
                                             }
                                         }}
                                         onInput={(e) => {
+                                            messageRef.current = e.target;
+
                                             const selection =
                                                 window.getSelection();
                                             const range =
@@ -499,7 +502,7 @@ function App() {
 
                                             handleEditChange(e, msg.id);
 
-                                            requestAnimationFrame(() => {
+                                            setTimeout(() => {
                                                 const newRange =
                                                     document.createRange();
                                                 newRange.setStart(
@@ -514,7 +517,7 @@ function App() {
                                                 );
                                                 selection.removeAllRanges();
                                                 selection.addRange(newRange);
-                                            });
+                                            }, 0);
                                         }}
                                         suppressContentEditableWarning={true}
                                     >
