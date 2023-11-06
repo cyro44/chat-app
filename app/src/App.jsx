@@ -19,6 +19,8 @@ function App() {
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
 
+    // MAKE MULTI-LINE MESSAGES
+
     const currentUser = localStorage.getItem("username");
     const currentUserId = localStorage.getItem("userId");
 
@@ -161,7 +163,8 @@ function App() {
     }, [typingUser]);
 
     const handleChange = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
             if (message.trim() === "") {
                 newToast(
                     "Error!",
@@ -172,6 +175,18 @@ function App() {
                 sendMessage(message);
                 setMessage("");
             }
+        } else if (e.key === "Enter" && e.shiftKey) {
+            const textarea = document.querySelector(".textBox");
+            e.preventDefault();
+            const cursorPosition = e.target.selectionStart;
+            const newValue =
+                message.slice(0, cursorPosition) +
+                "\n" +
+                message.slice(cursorPosition);
+            setMessage(newValue);
+            setTimeout(() => {
+                textarea.scrollTop = textarea.scrollHeight;
+            }, 0);
         } else {
             setMessage(e.target.value);
         }
@@ -521,7 +536,14 @@ function App() {
                                         }}
                                         suppressContentEditableWarning={true}
                                     >
-                                        {msg.message}
+                                        {msg.message
+                                            .split("\n")
+                                            .map((line, index) => (
+                                                <span key={index}>
+                                                    {line}
+                                                    <br />
+                                                </span>
+                                            ))}
                                     </p>
                                 </span>
                             </span>
@@ -544,7 +566,7 @@ function App() {
                     <p>{typingUser} is typing...</p>
                 </div>
             )}
-            <input
+            <textarea
                 id="messageBox"
                 className="textBox"
                 type="text"

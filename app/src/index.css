@@ -178,6 +178,23 @@ input {
     font-size: 16px;
 }
 
+.textBox {
+    position: fixed;
+    padding: 10px;
+    padding-top: 12px;
+    border-radius: 8px;
+    border: none;
+    width: calc(100vw - 120px);
+    height: 30px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    outline: none;
+    font-size: 16px;
+    font-family: inherit;
+    resize: none;
+}
+
 .messages {
     height: calc(100vh - 70px);
     overflow-y: auto;
@@ -225,7 +242,6 @@ input {
 }
 
 .messageTextText {
-    /* word-break: break-all; */
     width: fit-content;
     margin-right: 210px;
     transform: translate(50px, -40px);
