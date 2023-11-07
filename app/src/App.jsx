@@ -119,7 +119,7 @@ function App() {
                 if (userAtBottom) {
                     setTimeout(() => {
                         scrollToBottom();
-                    }, 100);
+                    }, 0);
                 }
             });
 
@@ -127,7 +127,7 @@ function App() {
                 setMessages(existingMessages);
                 setTimeout(() => {
                     scrollToBottom();
-                }, 10);
+                }, 0);
             });
 
             s.on("start_typing", (username) => {
@@ -274,7 +274,7 @@ function App() {
         if (userAtBottom) {
             setTimeout(() => {
                 scrollToBottom();
-            }, 100);
+            }, 0);
         }
     };
 
