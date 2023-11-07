@@ -183,10 +183,18 @@ function App() {
                 message.slice(0, cursorPosition) +
                 "\n" +
                 message.slice(cursorPosition);
-            setMessage(newValue);
-            setTimeout(() => {
-                textarea.scrollTop = textarea.scrollHeight;
-            }, 0);
+            if ((newValue.match(/\n/g) || []).length <= 10) {
+                setMessage(newValue);
+                setTimeout(() => {
+                    textarea.scrollTop = textarea.scrollHeight;
+                }, 0);
+            } else {
+                newToast(
+                    "Error!",
+                    "Maximum number of line breaks exceeded",
+                    "error"
+                );
+            }
         } else {
             setMessage(e.target.value);
         }
