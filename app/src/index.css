@@ -181,7 +181,6 @@ input {
 .textBox {
     position: fixed;
     padding: 10px;
-    padding-top: 12px;
     border-radius: 8px;
     border: none;
     width: calc(100vw - 120px);
