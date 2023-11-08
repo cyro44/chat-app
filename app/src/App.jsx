@@ -19,8 +19,6 @@ function App() {
     const typingTimeoutRef = useRef();
     const [editingMessage, setEditingMessage] = useState(null);
 
-    // MAKE MULTI-LINE MESSAGES
-
     const currentUser = localStorage.getItem("username");
     const currentUserId = localStorage.getItem("userId");
 
@@ -375,215 +373,243 @@ function App() {
 
     return (
         <>
-            <button className="settingsBtn" onClick={toggleModal}>
-                Settings
-            </button>
-            <div
-                className="settingsModal"
-                style={{ display: showModal ? "block" : "none" }}
-            >
-                <span className="close" onClick={toggleModal}>
-                    <i className="fa-solid fa-square-xmark"></i>
-                </span>
-                <h1 style={{ textAlign: "center" }}>Settings</h1>
-                <div className="usernameContainer">
-                    <h2 className="usernameH2">Set or Change Your Username</h2>
-                    <input
-                        className="usernameInput"
-                        type="text"
-                        placeholder="Type in your username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        autoComplete="off"
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                if (
-                                    username.length >= 4 &&
-                                    username.length <= 18 &&
-                                    !/\s/.test(username)
-                                ) {
-                                    socket.emit("set_username", username);
-                                    localStorage.setItem("username", username);
-                                    userId = uuidv4();
-                                    localStorage.setItem("userId", userId);
-                                    newToast(
-                                        "Done!",
-                                        "Username set to " + username,
-                                        "info"
-                                    );
-                                    setUsername("");
-                                } else {
-                                    newToast(
-                                        "Error!",
-                                        "Username must be between 4 and 18 characters and cannot contain spaces",
-                                        "error"
-                                    );
-                                }
-                            }
-                        }}
-                    />
-                </div>
-                <div className="profilePicContainer">
-                    <h2 className="profilePicH2">
-                        Set or Change Your Profile Picture
-                    </h2>
-                    <button onClick={handleClick}>
-                        Change or set Profile Picture
-                    </button>
-                    <button
+            <div className="rooms">
+                {/* {rooms.map((room) => (
+                    <div
+                        className="room"
+                        key={room.id}
                         onClick={() => {
-                            changePfp();
-                            setFileSelected(false);
+                            setRoomId(room.id);
+                            setShowModal(false);
                         }}
                     >
-                        Upload
-                    </button>
-                    {showFileInput && (
-                        <div>
-                            <input
-                                type="file"
-                                id="file"
-                                accept="image/*"
-                                onChange={handleFileInput}
-                                className="fileInput"
-                                style={{ display: "none" }}
-                            />
-                            <label htmlFor="file" className="fileInputLabel">
-                                {fileSelected
-                                    ? "File Selected"
-                                    : "Choose a file"}
-                            </label>
-                            <button
-                                onClick={() => {
-                                    setShowFileInput(false);
-                                    setFileSelected(false);
-                                }}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    )}
-                </div>
+                        {room.name}
+                    </div>
+                ))} */}
             </div>
-            <div className="messages" ref={messagesEndRef}>
-                {messages.map((msg, index) => {
-                    const showDate =
-                        index === 0 || msg.userId !== previousUserId;
-                    previousUserId = msg.userId;
-
-                    return (
-                        <div
-                            key={msg.id}
-                            style={{ textAlign: "left" }}
-                            className="message"
+            <div className="chat">
+                <button className="settingsBtn" onClick={toggleModal}>
+                    Settings
+                </button>
+                <div
+                    className="settingsModal"
+                    style={{ display: showModal ? "block" : "none" }}
+                >
+                    <span className="close" onClick={toggleModal}>
+                        <i className="fa-solid fa-square-xmark"></i>
+                    </span>
+                    <h1 style={{ textAlign: "center" }}>Settings</h1>
+                    <div className="usernameContainer">
+                        <h2 className="usernameH2">
+                            Set or Change Your Username
+                        </h2>
+                        <input
+                            className="usernameInput"
+                            type="text"
+                            placeholder="Type in your username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            autoComplete="off"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    if (
+                                        username.length >= 4 &&
+                                        username.length <= 18 &&
+                                        !/\s/.test(username)
+                                    ) {
+                                        socket.emit("set_username", username);
+                                        localStorage.setItem(
+                                            "username",
+                                            username
+                                        );
+                                        userId = uuidv4();
+                                        localStorage.setItem("userId", userId);
+                                        newToast(
+                                            "Done!",
+                                            "Username set to " + username,
+                                            "info"
+                                        );
+                                        setUsername("");
+                                    } else {
+                                        newToast(
+                                            "Error!",
+                                            "Username must be between 4 and 18 characters and cannot contain spaces",
+                                            "error"
+                                        );
+                                    }
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="profilePicContainer">
+                        <h2 className="profilePicH2">
+                            Set or Change Your Profile Picture
+                        </h2>
+                        <button onClick={handleClick}>
+                            Change or set Profile Picture
+                        </button>
+                        <button
+                            onClick={() => {
+                                changePfp();
+                                setFileSelected(false);
+                            }}
                         >
-                            <span className="messageText">
-                                {msg.pfp && (
-                                    <img
-                                        className="pfp"
-                                        src={msg.pfp}
-                                        alt="Profile picture"
-                                    />
-                                )}
-                                {msg.username && (
-                                    <strong className="strong">
-                                        {msg.username}
-                                    </strong>
-                                )}
-                                {showDate && (
-                                    <span className="messageDate">
-                                        {formatDate(msg.date)}
-                                    </span>
-                                )}
-                                <br />
-                                <span style={{ marginLeft: "50px" }}>
-                                    <p
-                                        className={`messageTextText ${
-                                            !msg.message.includes(" ")
-                                                ? "breakAll"
-                                                : ""
-                                        }`}
-                                        ref={messageRef}
-                                        contentEditable
-                                        spellCheck="false"
-                                        autoComplete="off"
-                                        id={`message-${msg.id}`}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                e.preventDefault();
-                                                handleKeyPress(e, msg.id);
-                                            }
-                                        }}
-                                        onInput={(e) => {
-                                            messageRef.current = e.target;
-
-                                            const selection =
-                                                window.getSelection();
-                                            const range =
-                                                selection.getRangeAt(0);
-                                            const { startOffset } = range;
-
-                                            handleEditChange(e, msg.id);
-
-                                            setTimeout(() => {
-                                                const newRange =
-                                                    document.createRange();
-                                                newRange.setStart(
-                                                    messageRef.current
-                                                        .childNodes[0],
-                                                    startOffset
-                                                );
-                                                newRange.setEnd(
-                                                    messageRef.current
-                                                        .childNodes[0],
-                                                    startOffset
-                                                );
-                                                selection.removeAllRanges();
-                                                selection.addRange(newRange);
-                                            }, 0);
-                                        }}
-                                        suppressContentEditableWarning={true}
-                                    >
-                                        {msg.message
-                                            .split("\n")
-                                            .map((line, index) => (
-                                                <span key={index}>
-                                                    {line}
-                                                    <br />
-                                                </span>
-                                            ))}
-                                    </p>
-                                </span>
-                            </span>
-                            {msg.userId === currentUserId &&
-                                editingMessage !== msg.id && (
-                                    <button
-                                        className="deleteBtn"
-                                        onClick={() => handleDelete(msg.id)}
-                                    >
-                                        <i className="fa-solid fa-trash"></i>
-                                    </button>
-                                )}
-                        </div>
-                    );
-                })}
-            </div>
-
-            {isTyping && typingUser && (
-                <div className="typingIndicator">
-                    <p>{typingUser} is typing...</p>
+                            Upload
+                        </button>
+                        {showFileInput && (
+                            <div>
+                                <input
+                                    type="file"
+                                    id="file"
+                                    accept="image/*"
+                                    onChange={handleFileInput}
+                                    className="fileInput"
+                                    style={{ display: "none" }}
+                                />
+                                <label
+                                    htmlFor="file"
+                                    className="fileInputLabel"
+                                >
+                                    {fileSelected
+                                        ? "File Selected"
+                                        : "Choose a file"}
+                                </label>
+                                <button
+                                    onClick={() => {
+                                        setShowFileInput(false);
+                                        setFileSelected(false);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
-            <textarea
-                id="messageBox"
-                className="textBox"
-                type="text"
-                placeholder="Send a message"
-                value={message}
-                onChange={handleChange}
-                onKeyDown={handleChange}
-                autoComplete="off"
-            />
+                <div className="messages" ref={messagesEndRef}>
+                    {messages.map((msg, index) => {
+                        const showDate =
+                            index === 0 || msg.userId !== previousUserId;
+                        previousUserId = msg.userId;
+
+                        return (
+                            <div
+                                key={msg.id}
+                                style={{ textAlign: "left" }}
+                                className="message"
+                            >
+                                <span className="messageText">
+                                    {msg.pfp && (
+                                        <img
+                                            className="pfp"
+                                            src={msg.pfp}
+                                            alt="Profile picture"
+                                        />
+                                    )}
+                                    {msg.username && (
+                                        <strong className="strong">
+                                            {msg.username}
+                                        </strong>
+                                    )}
+                                    {showDate && (
+                                        <span className="messageDate">
+                                            {formatDate(msg.date)}
+                                        </span>
+                                    )}
+                                    <br />
+                                    <span style={{ marginLeft: "50px" }}>
+                                        <p
+                                            className={`messageTextText ${
+                                                !msg.message.includes(" ")
+                                                    ? "breakAll"
+                                                    : ""
+                                            }`}
+                                            ref={messageRef}
+                                            contentEditable
+                                            spellCheck="false"
+                                            autoComplete="off"
+                                            id={`message-${msg.id}`}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    handleKeyPress(e, msg.id);
+                                                }
+                                            }}
+                                            onInput={(e) => {
+                                                messageRef.current = e.target;
+
+                                                const selection =
+                                                    window.getSelection();
+                                                const range =
+                                                    selection.getRangeAt(0);
+                                                const { startOffset } = range;
+
+                                                handleEditChange(e, msg.id);
+
+                                                setTimeout(() => {
+                                                    const newRange =
+                                                        document.createRange();
+                                                    newRange.setStart(
+                                                        messageRef.current
+                                                            .childNodes[0],
+                                                        startOffset
+                                                    );
+                                                    newRange.setEnd(
+                                                        messageRef.current
+                                                            .childNodes[0],
+                                                        startOffset
+                                                    );
+                                                    selection.removeAllRanges();
+                                                    selection.addRange(
+                                                        newRange
+                                                    );
+                                                }, 0);
+                                            }}
+                                            suppressContentEditableWarning={
+                                                true
+                                            }
+                                        >
+                                            {msg.message
+                                                .split("\n")
+                                                .map((line, index) => (
+                                                    <span key={index}>
+                                                        {line}
+                                                        <br />
+                                                    </span>
+                                                ))}
+                                        </p>
+                                    </span>
+                                </span>
+                                {msg.userId === currentUserId &&
+                                    editingMessage !== msg.id && (
+                                        <button
+                                            className="deleteBtn"
+                                            onClick={() => handleDelete(msg.id)}
+                                        >
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+                                    )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {isTyping && typingUser && (
+                    <div className="typingIndicator">
+                        <p>{typingUser} is typing...</p>
+                    </div>
+                )}
+                <textarea
+                    id="messageBox"
+                    className="textBox"
+                    type="text"
+                    placeholder="Send a message"
+                    value={message}
+                    onChange={handleChange}
+                    onKeyDown={handleChange}
+                    autoComplete="off"
+                />
+            </div>
         </>
     );
 }

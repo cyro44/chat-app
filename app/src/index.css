@@ -36,6 +36,21 @@ h1 {
     line-height: 1.1;
 }
 
+.chat {
+    position: absolute;
+    width: calc(100vw - 90px);
+    height: fit-content;
+    right: 0;
+}
+
+.rooms {
+    position: absolute;
+    left: 0;
+    width: 75px;
+    height: 100vh;
+    background-color: #1a1a1a;
+}
+
 .strong {
     font-weight: 600;
 }
@@ -183,10 +198,10 @@ input {
     padding: 10px;
     border-radius: 8px;
     border: none;
-    width: calc(100vw - 120px);
+    width: calc(100vw - 195px);
     height: 30px;
     bottom: 20px;
-    left: 50%;
+    left: calc(50% + 25px);
     transform: translateX(-50%);
     outline: none;
     font-size: 16px;
@@ -254,7 +269,7 @@ input {
 
 .deleteBtn {
     position: absolute;
-    right: 70px;
+    right: 170px;
     padding: 10px;
     transform: translateY(-90px);
 }
