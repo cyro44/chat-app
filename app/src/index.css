@@ -51,6 +51,30 @@ h1 {
     background-color: #1a1a1a;
 }
 
+.room, .globalRoom {
+    position: relative;
+    margin-top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: border-radius 0.2s ease-in-out;
+}
+
+.room:hover, .globalRoom:hover {
+    border-radius: calc(100% - 35px);
+}
+
+#globe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .strong {
     font-weight: 600;
 }

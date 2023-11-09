@@ -25,6 +25,18 @@ const users = new Map();
 io.on("connection", (socket) => {
     console.log("Client connected");
 
+    socket.join("global_chat");
+
+    socket.on("join_room", (roomId, username) => {
+        socket.join(roomId);
+        console.log(`${username} joined room ${roomId}`);
+    });
+
+    socket.on("leave_room", (roomId, username) => {
+        socket.leave(roomId);
+        console.log(`${username} left room ${roomId}`);
+    });
+
     const messagesFilePath = path.join(__dirname, "messages.json");
     if (!fs.existsSync(messagesFilePath)) {
         fs.writeFileSync(messagesFilePath, JSON.stringify([]));
@@ -39,8 +51,8 @@ io.on("connection", (socket) => {
     }
     socket.emit("existing_messages", messages);
 
-    socket.on("message", (messageObject) => {
-        io.emit("message", messageObject);
+    socket.on("message", (messageObject, roomId) => {
+        io.to(roomId).emit("message", messageObject);
         let messages = [];
         if (fs.existsSync(messagesFilePath)) {
             const fileContent = fs.readFileSync(messagesFilePath, "utf-8");

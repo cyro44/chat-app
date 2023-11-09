@@ -8,6 +8,7 @@ function App() {
     const [messages, setMessages] = useState([]);
     const messageRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const [currentRoom, setCurrentRoom] = useState("global");
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
     const [socket, setSocket] = useState(null);
@@ -24,9 +25,10 @@ function App() {
 
     const isUserAtBottom = () => {
         return (
+            messagesEndRef.current &&
             messagesEndRef.current.scrollHeight -
                 messagesEndRef.current.scrollTop ===
-            messagesEndRef.current.clientHeight
+                messagesEndRef.current.clientHeight
         );
     };
 
@@ -160,6 +162,13 @@ function App() {
         };
     }, [typingUser]);
 
+    const handleJoinRoom = (roomId) => {
+        if (username) {
+            socket.emit("join_room", roomId, username);
+            setCurrentRoom(roomId);
+        }
+    };
+
     const handleChange = (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -170,7 +179,7 @@ function App() {
                     "error"
                 );
             } else {
-                sendMessage(message);
+                sendMessage(message, currentRoom);
                 setMessage("");
             }
         } else if (e.key === "Enter" && e.shiftKey) {
@@ -224,11 +233,16 @@ function App() {
     };
 
     const scrollToBottom = () => {
-        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollTop =
+                messagesEndRef.current.scrollHeight;
+        }
     };
 
-    const sendMessage = (message) => {
-        const previousMessageUserId = messages[messages.length - 1]?.userId;
+    const sendMessage = (message, roomId) => {
+        const previousMessageUserId = messages[messages.length - 1]
+            ? messages[messages.length - 1].userId
+            : null;
         let username = localStorage.getItem("username");
         let pfp = localStorage.getItem("pfp");
 
@@ -262,13 +276,18 @@ function App() {
             id: uuidv4(),
             userId: currentUserId,
             date: new Date(),
+            roomId: roomId,
             pfp,
             username,
             message,
             image,
         };
+
         const userAtBottom = isUserAtBottom();
-        socket.emit("message", newMessage);
+        socket.emit("message", newMessage, roomId);
+
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+
         if (userAtBottom) {
             setTimeout(() => {
                 scrollToBottom();
@@ -357,7 +376,7 @@ function App() {
         setShowModal(!showModal);
     };
 
-    let previousUserId = null;
+    let lastDateShownUserId = null;
     let userId;
 
     const isFirstVisit = localStorage.getItem("isFirstVisit");
@@ -374,18 +393,12 @@ function App() {
     return (
         <>
             <div className="rooms">
-                {/* {rooms.map((room) => (
-                    <div
-                        className="room"
-                        key={room.id}
-                        onClick={() => {
-                            setRoomId(room.id);
-                            setShowModal(false);
-                        }}
-                    >
-                        {room.name}
-                    </div>
-                ))} */}
+                <div
+                    className="globalRoom"
+                    onClick={() => handleJoinRoom("global")}
+                >
+                    <i id="globe" className="fa-solid fa-globe"></i>
+                </div>
             </div>
             <div className="chat">
                 <button className="settingsBtn" onClick={toggleModal}>
@@ -487,111 +500,124 @@ function App() {
                     </div>
                 </div>
                 <div className="messages" ref={messagesEndRef}>
-                    {messages.map((msg, index) => {
-                        const showDate =
-                            index === 0 || msg.userId !== previousUserId;
-                        previousUserId = msg.userId;
+                    {messages
+                        .filter((msg) => msg !== null)
+                        .map((msg, index) => {
+                            const showDate =
+                                index === 0 ||
+                                (msg && msg.userId !== lastDateShownUserId);
 
-                        return (
-                            <div
-                                key={msg.id}
-                                style={{ textAlign: "left" }}
-                                className="message"
-                            >
-                                <span className="messageText">
-                                    {msg.pfp && (
-                                        <img
-                                            className="pfp"
-                                            src={msg.pfp}
-                                            alt="Profile picture"
-                                        />
-                                    )}
-                                    {msg.username && (
-                                        <strong className="strong">
-                                            {msg.username}
-                                        </strong>
-                                    )}
-                                    {showDate && (
-                                        <span className="messageDate">
-                                            {formatDate(msg.date)}
-                                        </span>
-                                    )}
-                                    <br />
-                                    <span style={{ marginLeft: "50px" }}>
-                                        <p
-                                            className={`messageTextText ${
-                                                !msg.message.includes(" ")
-                                                    ? "breakAll"
-                                                    : ""
-                                            }`}
-                                            ref={messageRef}
-                                            contentEditable
-                                            spellCheck="false"
-                                            autoComplete="off"
-                                            id={`message-${msg.id}`}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
-                                                    handleKeyPress(e, msg.id);
+                            if (showDate) {
+                                lastDateShownUserId = msg.userId;
+                            }
+
+                            return (
+                                <div
+                                    key={msg.id}
+                                    style={{ textAlign: "left" }}
+                                    className="message"
+                                >
+                                    <span className="messageText">
+                                        {msg.pfp && (
+                                            <img
+                                                className="pfp"
+                                                src={msg.pfp}
+                                                alt="Profile picture"
+                                            />
+                                        )}
+                                        {msg.username && (
+                                            <strong className="strong">
+                                                {msg.username}
+                                            </strong>
+                                        )}
+                                        {showDate && (
+                                            <span className="messageDate">
+                                                {formatDate(msg.date)}
+                                            </span>
+                                        )}
+                                        <br />
+                                        <span style={{ marginLeft: "50px" }}>
+                                            <p
+                                                className={`messageTextText ${
+                                                    !msg.message.includes(" ")
+                                                        ? "breakAll"
+                                                        : ""
+                                                }`}
+                                                ref={messageRef}
+                                                contentEditable
+                                                spellCheck="false"
+                                                autoComplete="off"
+                                                id={`message-${msg.id}`}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        handleKeyPress(
+                                                            e,
+                                                            msg.id
+                                                        );
+                                                    }
+                                                }}
+                                                onInput={(e) => {
+                                                    messageRef.current =
+                                                        e.target;
+
+                                                    const selection =
+                                                        window.getSelection();
+                                                    const range =
+                                                        selection.getRangeAt(0);
+                                                    const { startOffset } =
+                                                        range;
+
+                                                    handleEditChange(e, msg.id);
+
+                                                    setTimeout(() => {
+                                                        const newRange =
+                                                            document.createRange();
+                                                        newRange.setStart(
+                                                            messageRef.current
+                                                                .childNodes[0],
+                                                            startOffset
+                                                        );
+                                                        newRange.setEnd(
+                                                            messageRef.current
+                                                                .childNodes[0],
+                                                            startOffset
+                                                        );
+                                                        selection.removeAllRanges();
+                                                        selection.addRange(
+                                                            newRange
+                                                        );
+                                                    }, 0);
+                                                }}
+                                                suppressContentEditableWarning={
+                                                    true
                                                 }
-                                            }}
-                                            onInput={(e) => {
-                                                messageRef.current = e.target;
-
-                                                const selection =
-                                                    window.getSelection();
-                                                const range =
-                                                    selection.getRangeAt(0);
-                                                const { startOffset } = range;
-
-                                                handleEditChange(e, msg.id);
-
-                                                setTimeout(() => {
-                                                    const newRange =
-                                                        document.createRange();
-                                                    newRange.setStart(
-                                                        messageRef.current
-                                                            .childNodes[0],
-                                                        startOffset
-                                                    );
-                                                    newRange.setEnd(
-                                                        messageRef.current
-                                                            .childNodes[0],
-                                                        startOffset
-                                                    );
-                                                    selection.removeAllRanges();
-                                                    selection.addRange(
-                                                        newRange
-                                                    );
-                                                }, 0);
-                                            }}
-                                            suppressContentEditableWarning={
-                                                true
-                                            }
-                                        >
-                                            {msg.message
-                                                .split("\n")
-                                                .map((line, index) => (
-                                                    <span key={index}>
-                                                        {line}
-                                                        <br />
-                                                    </span>
-                                                ))}
-                                        </p>
+                                            >
+                                                {msg.message
+                                                    .split("\n")
+                                                    .map((line, index) => (
+                                                        <span key={index}>
+                                                            {line}
+                                                            <br />
+                                                        </span>
+                                                    ))}
+                                            </p>
+                                        </span>
                                     </span>
-                                </span>
-                                {msg.userId === currentUserId &&
-                                    editingMessage !== msg.id && (
-                                        <button
-                                            className="deleteBtn"
-                                            onClick={() => handleDelete(msg.id)}
-                                        >
-                                            <i className="fa-solid fa-trash"></i>
-                                        </button>
-                                    )}
-                            </div>
-                        );
-                    })}
+                                    {msg.userId === currentUserId &&
+                                        editingMessage !== msg.id && (
+                                            <button
+                                                className="deleteBtn"
+                                                onClick={() =>
+                                                    handleDelete(msg.id)
+                                                }
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
+                                        )}
+                                </div>
+                            );
+                        })}
                 </div>
 
                 {isTyping && typingUser && (
