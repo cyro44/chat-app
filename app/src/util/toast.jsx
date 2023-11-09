@@ -40,6 +40,10 @@ function newToast(title, description, type = "none", timeout = 5000) {
             }, 290);
         }
     }, timeout / 100);
+
+    toast.addEventListener("click", () => {
+        toast.remove();
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
