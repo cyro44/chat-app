@@ -27,14 +27,12 @@ io.on("connection", (socket) => {
 
     socket.join("global_chat");
 
-    socket.on("join_room", (roomId, username) => {
+    socket.on("join_room", (roomId) => {
         socket.join(roomId);
-        console.log(`${username} joined room ${roomId}`);
     });
 
-    socket.on("leave_room", (roomId, username) => {
+    socket.on("leave_room", (roomId) => {
         socket.leave(roomId);
-        console.log(`${username} left room ${roomId}`);
     });
 
     const messagesFilePath = path.join(__dirname, "messages.json");
@@ -52,7 +50,7 @@ io.on("connection", (socket) => {
     socket.emit("existing_messages", messages);
 
     socket.on("message", (messageObject, roomId) => {
-        io.to(roomId).emit("message", messageObject);
+        socket.broadcast.to(roomId).emit("message", messageObject);
         let messages = [];
         if (fs.existsSync(messagesFilePath)) {
             const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
@@ -62,6 +60,13 @@ io.on("connection", (socket) => {
         }
         messages.push(messageObject);
         fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+    });
+
+    socket.on("get_room_messages", (roomId) => {
+        let roomMessages = messages.filter(
+            (message) => message.roomId === roomId
+        );
+        socket.emit("room_messages", roomMessages);
     });
 
     socket.on("set_username", (username) => {
@@ -98,7 +103,9 @@ io.on("connection", (socket) => {
             }
         }
 
-        const messageIndex = messages.findIndex((message) => message.id === editedMessage.id);
+        const messageIndex = messages.findIndex(
+            (message) => message.id === editedMessage.id
+        );
 
         if (messageIndex !== -1) {
             messages[messageIndex] = editedMessage;

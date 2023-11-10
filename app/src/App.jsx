@@ -79,9 +79,14 @@ function App() {
                 }
             });
 
+            socket.on("room_messages", (roomMessages) => {
+                setMessages(roomMessages);
+            });
+
             return () => {
                 socket.off("typing");
                 socket.off("user_disconnected");
+                socket.off("room_messages");
             };
         }
     }, [socket, currentUser, typingUser]);
@@ -170,10 +175,13 @@ function App() {
     };
 
     const handleJoinRoom = (roomId) => {
-        if (username) {
-            socket.emit("join_room", roomId, username);
-            setCurrentRoom(roomId);
+        if (currentRoom) {
+            socket.emit("leave_room", currentRoom);
         }
+
+        socket.emit("join_room", roomId);
+        socket.emit("get_room_messages", roomId);
+        setCurrentRoom(roomId);
     };
 
     const handleAddRoomSettings = () => {
@@ -308,7 +316,6 @@ function App() {
 
         const userAtBottom = isUserAtBottom();
         socket.emit("message", newMessage, roomId);
-
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         if (userAtBottom) {
@@ -429,9 +436,7 @@ function App() {
                         onClick={() => handleJoinRoom(room.id)}
                     >
                         <i id="icon" className="fa-solid fa-comment"></i>
-                        <div className="roomName">
-                            {room.name}
-                        </div>
+                        <div className="roomName">{room.name}</div>
                     </div>
                 ))}
                 <div
