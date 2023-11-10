@@ -8,6 +8,7 @@ function App() {
     const [messages, setMessages] = useState([]);
     const messageRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const [rooms, setRooms] = useState([]);
     const [currentRoom, setCurrentRoom] = useState("global");
     const [showModal, setShowModal] = useState(false);
     const [username, setUsername] = useState("");
@@ -162,11 +163,33 @@ function App() {
         };
     }, [typingUser]);
 
+    const newRoomContainer = document.querySelector(".addRoomContainer");
+
+    const removeRoomModal = () => {
+        newRoomContainer.style.display = "none";
+    };
+
     const handleJoinRoom = (roomId) => {
         if (username) {
             socket.emit("join_room", roomId, username);
             setCurrentRoom(roomId);
         }
+    };
+
+    const handleAddRoomSettings = () => {
+        const newRoomInput = document.querySelector(".addRoomInput");
+        newRoomInput.style.display = "block";
+        newRoomContainer.style.display = "block";
+    };
+
+    const handleAddRoom = (roomName) => {
+        const newRoom = {
+            id: uuidv4(),
+            name: roomName,
+        };
+
+        socket.emit("add_room", newRoom);
+        setRooms((oldRooms) => [...oldRooms, newRoom]);
     };
 
     const handleChange = (e) => {
@@ -397,8 +420,57 @@ function App() {
                     className="globalRoom"
                     onClick={() => handleJoinRoom("global")}
                 >
-                    <i id="globe" className="fa-solid fa-globe"></i>
+                    <i id="icon" className="fa-solid fa-globe"></i>
                 </div>
+                {rooms.map((room) => (
+                    <div
+                        className="room"
+                        key={room.id}
+                        onClick={() => handleJoinRoom(room.id)}
+                    >
+                        <div className="roomName">
+                            {room.name}
+                        </div>
+                    </div>
+                ))}
+                <div
+                    className="addRoom"
+                    onClick={() => handleAddRoomSettings()}
+                >
+                    <i id="icon" className="fa-solid fa-plus"></i>
+                </div>
+            </div>
+            <div className="addRoomContainer" style={{ display: "none" }}>
+                <span
+                    id="closeRoomModal"
+                    className="close"
+                    onClick={removeRoomModal}
+                >
+                    <i className="fa-solid fa-square-xmark"></i>
+                </span>
+                <input
+                    className="addRoomInput"
+                    type="text"
+                    placeholder="Type a room name"
+                    style={{ display: "none" }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            const roomName = e.target.value;
+                            if (roomName.trim() !== "") {
+                                handleAddRoom(roomName);
+                                e.target.value = "";
+                                removeRoomModal();
+                            } else {
+                                newToast(
+                                    "Error!",
+                                    "Room name cannot be empty or only spaces",
+                                    "error"
+                                );
+                            }
+                        }
+                    }}
+                />
             </div>
             <div className="chat">
                 <button className="settingsBtn" onClick={toggleModal}>
