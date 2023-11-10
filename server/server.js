@@ -12,10 +12,10 @@ const app = express();
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    },
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
 });
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
@@ -23,109 +23,107 @@ app.use(express.static(path.join(__dirname, "../chat-app/dist")));
 const users = new Map();
 
 io.on("connection", (socket) => {
-    console.log("Client connected");
+  console.log("Client connected");
 
-    socket.join("global_chat");
+  socket.join("global_chat");
 
-    socket.on("join_room", (roomId) => {
-        socket.join(roomId);
-    });
+  socket.on("join_room", (roomId) => {
+    socket.join(roomId);
+  });
 
-    socket.on("leave_room", (roomId) => {
-        socket.leave(roomId);
-    });
+  socket.on("leave_room", (roomId) => {
+    socket.leave(roomId);
+  });
 
-    const messagesFilePath = path.join(__dirname, "messages.json");
-    if (!fs.existsSync(messagesFilePath)) {
-        fs.writeFileSync(messagesFilePath, JSON.stringify([]));
+  const messagesFilePath = path.join(__dirname, "messages.json");
+  if (!fs.existsSync(messagesFilePath)) {
+    fs.writeFileSync(messagesFilePath, JSON.stringify([]));
+  }
+
+  let messages = [];
+  if (fs.existsSync(messagesFilePath)) {
+    const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+    if (fileContent) {
+      messages = JSON.parse(fileContent);
     }
+  }
+  socket.emit("existing_messages", messages);
+
+  socket.on("message", (messageObject, roomId) => {
+    socket.broadcast.to(roomId).emit("message", messageObject);
+    let messages = [];
+    if (fs.existsSync(messagesFilePath)) {
+      const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+      if (fileContent) {
+        messages = JSON.parse(fileContent);
+      }
+    }
+    messages.push(messageObject);
+    fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+  });
+
+  socket.on("get_room_messages", (roomId) => {
+    let roomMessages = messages.filter((message) => message.roomId === roomId);
+    socket.emit("room_messages", roomMessages);
+  });
+
+  socket.on("set_username", (username) => {
+    users.set(socket.id, username);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    const username = users.get(socket.id);
+    io.emit("user_disconnected", username);
+    users.delete(socket.id);
+  });
+
+  socket.on("typing", (username) => {
+    socket.broadcast.emit("typing", username);
+  });
+
+  socket.on("start_typing", (username) => {
+    socket.broadcast.emit("typing", username);
+  });
+
+  socket.on("stop_typing", () => {
+    socket.broadcast.emit("typing", null);
+  });
+
+  socket.on("edit_message", (editedMessage) => {
+    socket.broadcast.emit("edit_message", editedMessage);
 
     let messages = [];
     if (fs.existsSync(messagesFilePath)) {
-        const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
-        if (fileContent) {
-            messages = JSON.parse(fileContent);
-        }
+      const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+      if (fileContent) {
+        messages = JSON.parse(fileContent);
+      }
     }
-    socket.emit("existing_messages", messages);
 
-    socket.on("message", (messageObject, roomId) => {
-        socket.broadcast.to(roomId).emit("message", messageObject);
-        let messages = [];
-        if (fs.existsSync(messagesFilePath)) {
-            const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
-            if (fileContent) {
-                messages = JSON.parse(fileContent);
-            }
-        }
-        messages.push(messageObject);
-        fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
-    });
+    const messageIndex = messages.findIndex(
+      (message) => message.id === editedMessage.id
+    );
 
-    socket.on("get_room_messages", (roomId) => {
-        let roomMessages = messages.filter(
-            (message) => message.roomId === roomId
-        );
-        socket.emit("room_messages", roomMessages);
-    });
+    if (messageIndex !== -1) {
+      messages[messageIndex] = editedMessage;
+    }
 
-    socket.on("set_username", (username) => {
-        users.set(socket.id, username);
-    });
+    fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+  });
 
-    socket.on("disconnect", () => {
-        console.log("Client disconnected");
-        const username = users.get(socket.id);
-        io.emit("user_disconnected", username);
-        users.delete(socket.id);
-    });
-
-    socket.on("typing", (username) => {
-        socket.broadcast.emit("typing", username);
-    });
-
-    socket.on("start_typing", (username) => {
-        socket.broadcast.emit("typing", username);
-    });
-
-    socket.on("stop_typing", () => {
-        socket.broadcast.emit("typing", null);
-    });
-
-    socket.on("edit_message", (editedMessage) => {
-        socket.broadcast.emit("edit_message", editedMessage);
-
-        let messages = [];
-        if (fs.existsSync(messagesFilePath)) {
-            const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
-            if (fileContent) {
-                messages = JSON.parse(fileContent);
-            }
-        }
-
-        const messageIndex = messages.findIndex(
-            (message) => message.id === editedMessage.id
-        );
-
-        if (messageIndex !== -1) {
-            messages[messageIndex] = editedMessage;
-        }
-
-        fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
-    });
-
-    socket.on("delete_message", (messageId) => {
-        let messages = [];
-        if (fs.existsSync(messagesFilePath)) {
-            const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
-            if (fileContent) {
-                messages = JSON.parse(fileContent);
-            }
-        }
-        messages = messages.filter((message) => message.id !== messageId);
-        fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
-        io.emit("delete_message", messageId);
-    });
+  socket.on("delete_message", (messageId) => {
+    let messages = [];
+    if (fs.existsSync(messagesFilePath)) {
+      const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+      if (fileContent) {
+        messages = JSON.parse(fileContent);
+      }
+    }
+    messages = messages.filter((message) => message.id !== messageId);
+    fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+    io.emit("delete_message", messageId);
+  });
 });
 
 httpServer.listen(5173, () => console.log("Listening on port 5173"));

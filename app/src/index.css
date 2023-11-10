@@ -1,461 +1,465 @@
 :root {
-    font-family: "Poppins";
-    font-weight: 400;
-    text-align: left;
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
-    padding: 0;
-    margin: 0;
+  font-family: "Poppins";
+  font-weight: 400;
+  text-align: left;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
 }
 a:hover {
-    color: #535bf2;
+  color: #535bf2;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    min-width: 320px;
-    min-height: 100vh;
-    overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 
 .chat {
-    position: absolute;
-    width: calc(100vw - 90px);
-    height: fit-content;
-    right: 0;
+  position: absolute;
+  width: calc(100vw - 90px);
+  height: fit-content;
+  right: 0;
 }
 
 .rooms {
-    position: absolute;
-    left: 0;
-    width: 75px;
-    height: 100vh;
-    background-color: #1a1a1a;
+  position: absolute;
+  left: 0;
+  width: 75px;
+  height: 100vh;
+  background-color: #1a1a1a;
 }
 
-.room, .addRoom, .globalRoom {
-    position: relative;
-    margin-top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    border-radius: 100%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    transition: border-radius 0.2s ease-in-out;
+.room,
+.addRoom,
+.globalRoom {
+  position: relative;
+  margin-top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  border-radius: 100%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: border-radius 0.2s ease-in-out;
 }
 
-.room:hover, .addRoom:hover, .globalRoom:hover {
-    border-radius: 15px;
+.room:hover,
+.addRoom:hover,
+.globalRoom:hover {
+  border-radius: 15px;
 }
 
 .room:hover .roomName {
-    opacity: 1;
+  opacity: 1;
 }
 
 .roomName {
-    position: absolute;
-    opacity: 0;
-    transform: translate(75px, 5px);
-    border-radius: 4px;
-    background-color: #333;
-    z-index: 10000;
-    padding: 5px;
+  position: absolute;
+  opacity: 0;
+  transform: translate(75px, 5px);
+  border-radius: 4px;
+  background-color: #333;
+  z-index: 10000;
+  padding: 5px;
 }
 
 #icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .addRoomContainer {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    width: 80vw;
-    height: 80vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  width: 80vw;
+  height: 80vh;
 }
 
 .addRoomInput {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 50vw;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
 }
 
 .strong {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .toast-holder {
-    position: fixed;
-    top: 10px;
-    right: 50px;
-    z-index: 99999;
-    width: 300px;
-    height: auto;
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  z-index: 99999;
+  width: 300px;
+  height: auto;
 }
 
 .toast {
-    width: 300px;
-    height: auto;
-    padding: 20px;
-    padding-bottom: 30px;
-    margin-top: 10px;
-    border-radius: 5px;
-    background-color: #333;
-    color: #fff;
-    font-size: 16px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    text-align: left;
-    position: relative;
-    animation: slideIn 0.3s ease-in-out;
+  width: 300px;
+  height: auto;
+  padding: 20px;
+  padding-bottom: 30px;
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: left;
+  position: relative;
+  animation: slideIn 0.3s ease-in-out;
 }
 
 .toast.done {
-    animation: slideOut 0.3s ease-in-out;
+  animation: slideOut 0.3s ease-in-out;
 }
 
 .toast.error {
-    background-color: #d9534f;
+  background-color: #d9534f;
 }
 
 .toast.warning {
-    background-color: #ee9836;
+  background-color: #ee9836;
 }
 
 .toast.info {
-    background-color: #5bc0de;
+  background-color: #5bc0de;
 }
 
 .toast h1 {
-    font-size: 18px;
-    margin: 0 0 10px 0;
+  font-size: 18px;
+  margin: 0 0 10px 0;
 }
 
 .toast p {
-    margin: 0;
+  margin: 0;
 }
 
 .toast .progress-outer {
-    width: 100%;
-    height: 10px;
-    background-color: #333;
-    border: none;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+  width: 100%;
+  height: 10px;
+  background-color: #333;
+  border: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .toast .progress-inner {
-    width: 0;
-    height: 100%;
-    background-color: gray;
-    border: none;
-    margin: 0;
-    transition: width 0.1s linear;
-    border-bottom-left-radius: 5px;
+  width: 0;
+  height: 100%;
+  background-color: gray;
+  border: none;
+  margin: 0;
+  transition: width 0.1s linear;
+  border-bottom-left-radius: 5px;
 }
 
 @keyframes slideIn {
-    from {
-        transform: translateX(100%);
-    }
-    to {
-        transform: translateX(0);
-    }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideOut {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(100%);
-    }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
 }
 
 button:hover {
-    border-color: #646cff;
+  border-color: #646cff;
 }
 
 button:active {
-    transform: scale(0.99);
-    transition: transform 0.25s;
+  transform: scale(0.99);
+  transition: transform 0.25s;
 }
 
 @media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-    a:hover {
-        color: #747bff;
-    }
-    button {
-        background-color: #f9f9f9;
-    }
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }
 
 input {
-    position: fixed;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    width: calc(100vw - 120px);
-    height: 30px;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    outline: none;
-    font-size: 16px;
+  position: fixed;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  width: calc(100vw - 120px);
+  height: 30px;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  outline: none;
+  font-size: 16px;
 }
 
 .textBox {
-    position: fixed;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    width: calc(100vw - 195px);
-    height: 30px;
-    bottom: 20px;
-    left: calc(50% + 25px);
-    transform: translateX(calc(-50% + 10px));
-    outline: none;
-    font-size: 16px;
-    font-family: inherit;
-    resize: none;
+  position: fixed;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  width: calc(100vw - 195px);
+  height: 30px;
+  bottom: 20px;
+  left: calc(50% + 25px);
+  transform: translateX(calc(-50% + 10px));
+  outline: none;
+  font-size: 16px;
+  font-family: inherit;
+  resize: none;
 }
 
 .messages {
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: #555 transparent;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #555 transparent;
 }
 
 .messages::-webkit-scrollbar {
-    width: 12px;
-    border-radius: 8px;
+  width: 12px;
+  border-radius: 8px;
 }
 
 .messages::-webkit-scrollbar-track {
-    background: #1a1a1a;
-    border-radius: 8px;
+  background: #1a1a1a;
+  border-radius: 8px;
 }
 
 .messages::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 8px;
+  background: #555;
+  border-radius: 8px;
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
 }
 
 .message {
-    position: relative;
-    left: 0;
-    text-align: left;
-    overflow-wrap: break-word;
-    width: calc(100vw - 32px);
-    margin-left: 25px;
-    margin-bottom: -50px;
-    transform: translate(21px, calc(-5% + 20px));
+  position: relative;
+  left: 0;
+  text-align: left;
+  overflow-wrap: break-word;
+  width: calc(100vw - 32px);
+  margin-left: 25px;
+  margin-bottom: -50px;
+  transform: translate(21px, calc(-5% + 20px));
 }
 
 .messageText {
-    transform: translateY(-75%);
+  transform: translateY(-75%);
 }
 
 .breakAll {
-    word-break: break-all;
+  word-break: break-all;
 }
 
 .messageTextText {
-    width: fit-content;
-    margin-right: 210px;
-    transform: translate(50px, -40px);
+  width: fit-content;
+  margin-right: 210px;
+  transform: translate(50px, -40px);
 }
 
 .messageDate {
-    font-size: 10px;
-    color: #888;
-    margin-left: 10px;
+  font-size: 10px;
+  color: #888;
+  margin-left: 10px;
 }
 
 .deleteBtn {
-    position: absolute;
-    right: 170px;
-    padding: 10px;
-    transform: translateY(-90px);
+  position: absolute;
+  right: 170px;
+  padding: 10px;
+  transform: translateY(-90px);
 }
 
 .deleteBtn:active {
-    transform: translateY(-90px);
+  transform: translateY(-90px);
 }
 
 .typingIndicator {
-    position: fixed;
-    bottom: 60px;
-    margin-left: 55px;
+  position: fixed;
+  bottom: 60px;
+  margin-left: 55px;
 }
 
 #closeRoomModal {
-    margin-right: 20px;
-    margin-top: 10px;
+  margin-right: 20px;
+  margin-top: 10px;
 }
 
 .close {
-    color: #aaaaaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-    color: #5a5a5a;
-    text-decoration: none;
-    cursor: pointer;
+  color: #5a5a5a;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .settingsModal {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    width: 75vw;
-    height: 75vh;
-    z-index: 2;
-    padding: 20px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  width: 75vw;
+  height: 75vh;
+  z-index: 2;
+  padding: 20px;
 }
 
 .settingsBtn {
-    position: fixed;
-    top: 10px;
-    right: 15px;
-    z-index: 2;
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  z-index: 2;
 }
 
 .usernameContainer,
 .profilePicContainer {
-    display: inline-block;
-    width: 50%;
-    vertical-align: top;
+  display: inline-block;
+  width: 50%;
+  vertical-align: top;
 }
 
 .usernameContainer {
-    width: 50%;
-    height: 100%;
+  width: 50%;
+  height: 100%;
 }
 
 .usernameH2 {
-    text-align: left;
-    margin-left: 50px;
+  text-align: left;
+  margin-left: 50px;
 }
 
 .usernameInput {
-    position: relative;
-    width: calc(100% - 50px);
-    min-width: 250px;
-    margin-top: 50px;
-    margin-left: 30px;
+  position: relative;
+  width: calc(100% - 50px);
+  min-width: 250px;
+  margin-top: 50px;
+  margin-left: 30px;
 }
 
 .profilePicContainer {
-    width: 50%;
-    height: 100%;
-    left: 0;
-    text-align: right;
+  width: 50%;
+  height: 100%;
+  left: 0;
+  text-align: right;
 }
 
 .profilePicH2 {
-    margin-right: 50px;
-    padding: 0;
+  margin-right: 50px;
+  padding: 0;
 }
 
 .profilePicContainer button {
-    background-color: #333;
-    margin-top: 30px;
-    margin-right: 50px;
+  background-color: #333;
+  margin-top: 30px;
+  margin-right: 50px;
 }
 
 .fileInputLabel {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #333;
-    cursor: pointer;
-    transition: border-color 0.25s;
-    right: 0;
-    display: inline-block;
-    color: white;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-right: 50px;
-    text-align: center;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #333;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  right: 0;
+  display: inline-block;
+  color: white;
+  cursor: pointer;
+  margin-top: 30px;
+  margin-right: 50px;
+  text-align: center;
 }
 
 .fileInputLabel:hover {
-    border-color: #646cff;
+  border-color: #646cff;
 }
 
 .fileInputLabel:active {
-    transform: scale(0.99);
-    transition: transform 0.25s;
+  transform: scale(0.99);
+  transition: transform 0.25s;
 }
 
 .pfp {
-    width: 50px;
-    height: 50px;
-    transform: translate(-10px, 60%);
-    border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translate(-10px, 60%);
+  border-radius: 50%;
 }
