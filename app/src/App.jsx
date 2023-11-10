@@ -428,6 +428,7 @@ function App() {
                         key={room.id}
                         onClick={() => handleJoinRoom(room.id)}
                     >
+                        <i id="icon" className="fa-solid fa-comment"></i>
                         <div className="roomName">
                             {room.name}
                         </div>
