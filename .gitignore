@@ -131,3 +131,6 @@ dist
 
 # ignore messages.json
 server/messages.json
+
+# ignore users.json
+server/users.json
