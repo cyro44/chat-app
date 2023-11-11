@@ -67,15 +67,51 @@ io.on("connection", (socket) => {
     socket.emit("room_messages", roomMessages);
   });
 
-  socket.on("set_username", (username) => {
-    users.set(socket.id, username);
+  socket.on("set_username", (username, profilePicture) => {
+    users.set(socket.id, { username, profilePicture });
+
+    const usersFilePath = path.join(__dirname, "users.json");
+    if (!fs.existsSync(usersFilePath)) {
+      fs.writeFileSync(usersFilePath, JSON.stringify([]));
+    }
+
+    let usersData = [];
+    if (fs.existsSync(usersFilePath)) {
+      const fileContent = fs.readFileSync(usersFilePath, "utf-8");
+      if (fileContent) {
+        usersData = JSON.parse(fileContent);
+      }
+    }
+
+    const userIndex = usersData.findIndex((user) => user.id === socket.id);
+    if (userIndex !== -1) {
+      usersData[userIndex] = { id: socket.id, username, profilePicture };
+    } else {
+      usersData.push({ id: socket.id, username, profilePicture });
+    }
+
+    fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-    const username = users.get(socket.id);
-    io.emit("user_disconnected", username);
-    users.delete(socket.id);
+    const user = users.get(socket.id);
+    if (user) {
+      io.emit("user_disconnected", user.username);
+      users.delete(socket.id);
+    
+      const usersFilePath = path.join(__dirname, "users.json");
+      let usersData = [];
+      if (fs.existsSync(usersFilePath)) {
+        const fileContent = fs.readFileSync(usersFilePath, "utf-8");
+        if (fileContent) {
+          usersData = JSON.parse(fileContent);
+        }
+      }
+    
+      usersData = usersData.filter((user) => user.id !== socket.id);
+      fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
+    }
   });
 
   socket.on("typing", (username) => {
