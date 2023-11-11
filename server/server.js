@@ -58,11 +58,20 @@ io.on("connection", (socket) => {
         messages = JSON.parse(fileContent);
       }
     }
+
+    messageObject.roomId = roomId;
     messages.push(messageObject);
     fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
   });
 
   socket.on("get_room_messages", (roomId) => {
+    let messages = [];
+    if (fs.existsSync(messagesFilePath)) {
+      const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+      if (fileContent) {
+        messages = JSON.parse(fileContent);
+      }
+    }
     let roomMessages = messages.filter((message) => message.roomId === roomId);
     socket.emit("room_messages", roomMessages);
   });
