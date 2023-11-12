@@ -7,6 +7,7 @@ import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const usersFilePath = path.join(__dirname, "users.json");
 
 const app = express();
 const httpServer = createServer(app);
@@ -76,27 +77,24 @@ io.on("connection", (socket) => {
     socket.emit("room_messages", roomMessages);
   });
 
-  socket.on("set_username", (username, profilePicture) => {
-    users.set(socket.id, { username, profilePicture });
+  socket.on("set_username", (username) => {
+    users.set(socket.id, { username });
 
-    const usersFilePath = path.join(__dirname, "users.json");
     if (!fs.existsSync(usersFilePath)) {
       fs.writeFileSync(usersFilePath, JSON.stringify([]));
     }
 
     let usersData = [];
-    if (fs.existsSync(usersFilePath)) {
-      const fileContent = fs.readFileSync(usersFilePath, "utf-8");
-      if (fileContent) {
-        usersData = JSON.parse(fileContent);
-      }
+    const fileContent = fs.readFileSync(usersFilePath, "utf-8");
+    if (fileContent) {
+      usersData = JSON.parse(fileContent);
     }
 
     const userIndex = usersData.findIndex((user) => user.id === socket.id);
     if (userIndex !== -1) {
-      usersData[userIndex] = { id: socket.id, username, profilePicture };
+      usersData[userIndex] = { id: socket.id, username };
     } else {
-      usersData.push({ id: socket.id, username, profilePicture });
+      usersData.push({ id: socket.id, username });
     }
 
     fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
@@ -108,18 +106,6 @@ io.on("connection", (socket) => {
     if (user) {
       io.emit("user_disconnected", user.username);
       users.delete(socket.id);
-    
-      const usersFilePath = path.join(__dirname, "users.json");
-      let usersData = [];
-      if (fs.existsSync(usersFilePath)) {
-        const fileContent = fs.readFileSync(usersFilePath, "utf-8");
-        if (fileContent) {
-          usersData = JSON.parse(fileContent);
-        }
-      }
-    
-      usersData = usersData.filter((user) => user.id !== socket.id);
-      fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
     }
   });
 
