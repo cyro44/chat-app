@@ -471,27 +471,36 @@ function App() {
               onKeyDown={(e) => {
                 if (e.key !== "Enter") return;
                 if (e.target.value == currentUser) {
-                  newToast("Error!", "The username you chose is the same as your current username", "error", 2500);
+                  newToast(
+                    "Error!",
+                    "The username you chose is the same as your current username",
+                    "error",
+                    2500
+                  );
                   return;
                 }
-                  if (
-                    username.length >= 4 &&
-                    username.length <= 18 &&
-                    !/\s/.test(username)
-                  ) {
+                if (
+                  username.length >= 4 &&
+                  username.length <= 18 &&
+                  !/\s/.test(username)
+                ) {
+                  if (localStorage.getItem("userId") === null) {
                     userId = uuidv4();
-                    socket.emit("set_username", username, userId);
-                    newToast("Done!", "Username set to " + username, "info");
-                    setUsername("");
                   } else {
-                    newToast(
-                      "Error!",
-                      "Username must be between 4 and 18 characters and cannot contain spaces",
-                      "error"
-                    );
+                    userId = localStorage.getItem("userId");
                   }
+                  socket.emit("set_username", username, userId);
+                  localStorage.setItem("username", username);
+                  newToast("Done!", "Username set to " + username, "info");
+                  setUsername("");
+                } else {
+                  newToast(
+                    "Error!",
+                    "Username must be between 4 and 18 characters and cannot contain spaces",
+                    "error"
+                  );
                 }
-              }
+              }}
             />
           </div>
           <div className="profilePicContainer">
