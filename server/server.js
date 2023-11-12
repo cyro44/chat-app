@@ -77,8 +77,8 @@ io.on("connection", (socket) => {
     socket.emit("room_messages", roomMessages);
   });
 
-  socket.on("set_username", (username) => {
-    users.set(socket.id, { username });
+  socket.on("set_username", (username, userId) => {
+    users.set(socket.id, { username, userId });
 
     if (!fs.existsSync(usersFilePath)) {
       fs.writeFileSync(usersFilePath, JSON.stringify([]));
@@ -92,9 +92,9 @@ io.on("connection", (socket) => {
 
     const userIndex = usersData.findIndex((user) => user.id === socket.id);
     if (userIndex !== -1) {
-      usersData[userIndex] = { id: socket.id, username };
+      usersData[userIndex] = { id: socket.id, username, userId };
     } else {
-      usersData.push({ id: socket.id, username });
+      usersData.push({ id: socket.id, username, userId });
     }
 
     fs.writeFileSync(usersFilePath, JSON.stringify(usersData));

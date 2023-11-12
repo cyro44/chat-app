@@ -479,10 +479,8 @@ function App() {
                     username.length <= 18 &&
                     !/\s/.test(username)
                   ) {
-                    socket.emit("set_username", username);
-                    localStorage.setItem("username", username);
                     userId = uuidv4();
-                    localStorage.setItem("userId", userId);
+                    socket.emit("set_username", username, userId);
                     newToast("Done!", "Username set to " + username, "info");
                     setUsername("");
                   } else {
