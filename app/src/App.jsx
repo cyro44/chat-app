@@ -469,7 +469,11 @@ function App() {
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="off"
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key !== "Enter") return;
+                if (e.target.value == currentUser) {
+                  newToast("Error!", "The username you chose is the same as your current username", "error", 2500);
+                  return;
+                }
                   if (
                     username.length >= 4 &&
                     username.length <= 18 &&
@@ -489,7 +493,7 @@ function App() {
                     );
                   }
                 }
-              }}
+              }
             />
           </div>
           <div className="profilePicContainer">
