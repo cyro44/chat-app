@@ -312,28 +312,14 @@ function App() {
     }
   };
 
-  const handleKeyPress = (e, id) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const messageElement = document.getElementById(`message-${id}`);
-      if (messageElement) {
-        messageRef.current = messageElement;
-        const updatedMessage = messageElement.innerText;
-        handleEditChange({ target: { value: updatedMessage } }, id);
-        handleEdit(id);
-      }
-    }
-  };
+  const handleEditChange = (id) => {
+    const editedMessage = messages.find((msg) => msg.id === id);
 
-  const handleEditChange = (e, id) => {
-    const updatedMessage = e.currentTarget.textContent;
-    const updatedMessages = messages.map((msg) =>
-      msg.id === id ? { ...msg, message: updatedMessage } : msg
-    );
-    setMessages(updatedMessages);
-
-    const editedMessage = updatedMessages.find((msg) => msg.id === id);
     if (editedMessage) {
+      const updatedMessages = messages.map((msg) =>
+        msg.id === id ? { ...msg, message: editedMessage.message } : msg
+      );
+      setMessages(updatedMessages);
       socket.emit("edit_message", editedMessage);
     }
   };
@@ -583,12 +569,6 @@ function App() {
                         spellCheck="false"
                         autoComplete="off"
                         id={`message-${msg.id}`}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleKeyPress(e, msg.id);
-                          }
-                        }}
                         onInput={(e) => {
                           messageRef.current = e.target;
 
@@ -597,19 +577,26 @@ function App() {
                           const { startOffset } = range;
 
                           handleEditChange(e, msg.id);
+                          handleEdit(msg.id);
 
                           setTimeout(() => {
-                            const newRange = document.createRange();
-                            newRange.setStart(
-                              messageRef.current.childNodes[0],
-                              startOffset
-                            );
-                            newRange.setEnd(
-                              messageRef.current.childNodes[0],
-                              startOffset
-                            );
-                            selection.removeAllRanges();
-                            selection.addRange(newRange);
+                            if (
+                              messageRef.current.childNodes[0] &&
+                              startOffset <=
+                                messageRef.current.childNodes[0].length
+                            ) {
+                              const newRange = document.createRange();
+                              newRange.setStart(
+                                messageRef.current.childNodes[0],
+                                startOffset
+                              );
+                              newRange.setEnd(
+                                messageRef.current.childNodes[0],
+                                startOffset
+                              );
+                              selection.removeAllRanges();
+                              selection.addRange(newRange);
+                            }
                           }, 0);
                         }}
                         suppressContentEditableWarning={true}
@@ -623,8 +610,7 @@ function App() {
                       </p>
                     </span>
                   </span>
-                  {msg.userId === currentUserId &&
-                    editingMessage !== msg.id && (
+                  {msg.userId === currentUserId && (
                       <button
                         className="deleteBtn"
                         onClick={() => handleDelete(msg.id)}
