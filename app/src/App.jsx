@@ -571,7 +571,7 @@ function App() {
                           !msg.message.includes(" ") ? "breakAll" : ""
                         }`}
                         ref={messageRef}
-                        contentEditable
+                        contentEditable={msg.userId === currentUserId}
                         spellCheck="false"
                         autoComplete="off"
                         id={`message-${msg.id}`}
