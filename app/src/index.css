@@ -343,7 +343,7 @@ input {
 .typingIndicator {
   position: fixed;
   bottom: 60px;
-  margin-left: 55px;
+  margin-left: 35px;
 }
 
 #closeRoomModal {
