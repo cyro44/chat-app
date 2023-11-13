@@ -303,7 +303,8 @@ function App() {
     }
   };
 
-  const handleEditChange = (id, newMessage) => {
+  const handleEditChange = (id, newMessage, e) => {
+    messageRef.current.textContent = e.current.textContent;
     setMessages((prevMessages) => {
       const editedMessage = prevMessages.find((msg) => msg.id === id);
       if (editedMessage && editedMessage.message !== newMessage) {
@@ -316,18 +317,6 @@ function App() {
       }
       return prevMessages;
     });
-
-    setTimeout(() => {
-      const el = document.getElementById(`message-`);
-      if (el) {
-        const range = document.createRange();
-        const sel = window.getSelection();
-        range.setStart(el.childNodes[0], el.textContent.length);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    }, 0);
   };
 
   const handleDelete = (id) => {
@@ -576,33 +565,7 @@ function App() {
                         autoComplete="off"
                         id={`message-${msg.id}`}
                         onInput={(e) => {
-                          messageRef.current = e.target;
-
-                          const selection = window.getSelection();
-                          const range = selection.getRangeAt(0);
-                          const { startOffset } = range;
-
                           handleEditChange(msg.id, e.target.textContent);
-
-                          setTimeout(() => {
-                            if (
-                              messageRef.current.childNodes[0] &&
-                              startOffset <=
-                                messageRef.current.childNodes[0].length
-                            ) {
-                              const newRange = document.createRange();
-                              newRange.setStart(
-                                messageRef.current.childNodes[0],
-                                startOffset
-                              );
-                              newRange.setEnd(
-                                messageRef.current.childNodes[0],
-                                startOffset
-                              );
-                              selection.removeAllRanges();
-                              selection.addRange(newRange);
-                            }
-                          }, 0);
                         }}
                         suppressContentEditableWarning={true}
                       >
