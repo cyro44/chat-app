@@ -19,7 +19,6 @@ function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [typingUser, setTypingUser] = useState("");
   const typingTimeoutRef = useRef();
-  const [editingMessage, setEditingMessage] = useState(null);
 
   const currentUser = localStorage.getItem("username");
   const currentUserId = localStorage.getItem("userId");
@@ -304,24 +303,31 @@ function App() {
     }
   };
 
-  const handleEdit = (id) => {
-    if (editingMessage === id) {
-      setEditingMessage(null);
-    } else {
-      setEditingMessage(id);
-    }
-  };
+  const handleEditChange = (id, newMessage) => {
+    setMessages((prevMessages) => {
+      const editedMessage = prevMessages.find((msg) => msg.id === id);
+      if (editedMessage && editedMessage.message !== newMessage) {
+        editedMessage.message = newMessage;
+        const updatedMessages = prevMessages.map((msg) =>
+          msg.id === id ? editedMessage : msg
+        );
+        socket.emit("edit_message", editedMessage);
+        return updatedMessages;
+      }
+      return prevMessages;
+    });
 
-  const handleEditChange = (id) => {
-    const editedMessage = messages.find((msg) => msg.id === id);
-
-    if (editedMessage) {
-      const updatedMessages = messages.map((msg) =>
-        msg.id === id ? { ...msg, message: editedMessage.message } : msg
-      );
-      setMessages(updatedMessages);
-      socket.emit("edit_message", editedMessage);
-    }
+    setTimeout(() => {
+      const el = document.getElementById(`message-`);
+      if (el) {
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(el.childNodes[0], el.textContent.length);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }, 0);
   };
 
   const handleDelete = (id) => {
@@ -576,8 +582,7 @@ function App() {
                           const range = selection.getRangeAt(0);
                           const { startOffset } = range;
 
-                          handleEditChange(e, msg.id);
-                          handleEdit(msg.id);
+                          handleEditChange(msg.id, e.target.textContent);
 
                           setTimeout(() => {
                             if (
@@ -611,13 +616,13 @@ function App() {
                     </span>
                   </span>
                   {msg.userId === currentUserId && (
-                      <button
-                        className="deleteBtn"
-                        onClick={() => handleDelete(msg.id)}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    )}
+                    <button
+                      className="deleteBtn"
+                      onClick={() => handleDelete(msg.id)}
+                    >
+                      <i className="fa-solid fa-trash"></i>
+                    </button>
+                  )}
                 </div>
               );
             })}
