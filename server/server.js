@@ -7,7 +7,7 @@ import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const usersFilePath = path.join(__dirname, "users.json");
+const usersFilePath = path.join(__dirname, "data", "users.json");
 const apiRouter = express.Router();
 
 const app = express();
@@ -24,14 +24,14 @@ app.use("/api", apiRouter);
 
 apiRouter.get("/messages", (res) => {
   const messages = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "messages.json"), "utf8")
+    fs.readFileSync(path.join(__dirname, "data", "messages.json"), "utf8")
   );
   res.json({ messages });
 });
 
 apiRouter.get("/users", (res) => {
   const users = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "users.json"), "utf8")
+    fs.readFileSync(path.join(__dirname, "data", "messages.json"), "utf8")
   );
   res.json({ users });
 });
@@ -53,7 +53,7 @@ io.on("connection", (socket) => {
     socket.leave(roomId);
   });
 
-  const messagesFilePath = path.join(__dirname, "messages.json");
+  const messagesFilePath = path.join(__dirname, "data", "messages.json");
   if (!fs.existsSync(messagesFilePath)) {
     fs.writeFileSync(messagesFilePath, JSON.stringify([]));
   }
@@ -98,11 +98,17 @@ io.on("connection", (socket) => {
     users.set(socket.id, { username, userId });
 
     if (!fs.existsSync(usersFilePath)) {
-      fs.writeFileSync(usersFilePath, JSON.stringify([]));
+      fs.writeFileSync(
+        path.join(__dirname, "data", "users.json"),
+        JSON.stringify([])
+      );
     }
 
     let usersData = [];
-    const fileContent = fs.readFileSync(usersFilePath, "utf-8");
+    const fileContent = fs.readFileSync(
+      path.join(__dirname, "data", "users.json"),
+      "utf8"
+    );
     if (fileContent) {
       usersData = JSON.parse(fileContent);
     }
@@ -114,7 +120,10 @@ io.on("connection", (socket) => {
       usersData.push({ id: socket.id, username, userId });
     }
 
-    fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
+    fs.writeFileSync(
+      path.join(__dirname, "data", "users.json"),
+      JSON.stringify(usersData)
+    );
   });
 
   socket.on("disconnect", () => {
@@ -157,19 +166,28 @@ io.on("connection", (socket) => {
       messages[messageIndex] = editedMessage;
     }
 
-    fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+    fs.writeFileSync(
+      path.join(__dirname, "data", "messages.json"),
+      JSON.stringify(messages)
+    );
   });
 
   socket.on("delete_message", (messageId) => {
     let messages = [];
     if (fs.existsSync(messagesFilePath)) {
-      const fileContent = fs.readFileSync(messagesFilePath, "utf-8");
+      const fileContent = fs.readFileSync(
+        path.join(__dirname, "data", "messages.json"),
+        "utf8"
+      );
       if (fileContent) {
         messages = JSON.parse(fileContent);
       }
     }
     messages = messages.filter((message) => message.id !== messageId);
-    fs.writeFileSync(messagesFilePath, JSON.stringify(messages));
+    fs.writeFileSync(
+      path.join(__dirname, "data", "messages.json"),
+      JSON.stringify(messages)
+    );
     io.emit("delete_message", messageId);
   });
 });
