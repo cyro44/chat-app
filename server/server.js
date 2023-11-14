@@ -8,6 +8,7 @@ import fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const usersFilePath = path.join(__dirname, "users.json");
+const apiRouter = express.Router();
 
 const app = express();
 const httpServer = createServer(app);
@@ -17,6 +18,22 @@ const io = new Server(httpServer, {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
+});
+
+app.use("/api", apiRouter);
+
+apiRouter.get("/messages", (res) => {
+  const messages = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "messages.json"), "utf8")
+  );
+  res.json({ messages });
+});
+
+apiRouter.get("/users", (res) => {
+  const users = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "users.json"), "utf8")
+  );
+  res.json({ users });
 });
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
