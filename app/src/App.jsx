@@ -96,12 +96,11 @@ function App() {
 
   const changePfp = () => {
     if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        localStorage.setItem("pfp", reader.result);
-        newToast("Done!", "Your new profile picture is set", "info");
-      };
-      reader.readAsDataURL(selectedFile);
+      let urlCreator = window.URL || window.webkitURL;
+      let imageUrl = urlCreator.createObjectURL(selectedFile);
+  
+      localStorage.setItem("pfp", imageUrl);
+      newToast("Done!", "Your new profile picture is set", "info");
     } else {
       newToast("Error!", "No file selected", "error");
     }
@@ -280,7 +279,6 @@ function App() {
       pfp = null;
     }
 
-    const image = selectedFile ? URL.createObjectURL(selectedFile) : null;
     const newMessage = {
       id: uuidv4(),
       userId: currentUserId,
@@ -289,7 +287,6 @@ function App() {
       pfp,
       username,
       message,
-      image,
     };
 
     const userAtBottom = isUserAtBottom();

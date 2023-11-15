@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import cors from "cors";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,8 @@ const apiRouter = express.Router();
 
 const app = express();
 const httpServer = createServer(app);
+
+app.use(cors());
 
 const io = new Server(httpServer, {
   cors: {
