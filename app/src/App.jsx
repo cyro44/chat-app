@@ -96,11 +96,26 @@ function App() {
 
   const changePfp = () => {
     if (selectedFile) {
-      let urlCreator = window.URL || window.webkitURL;
-      let imageUrl = urlCreator.createObjectURL(selectedFile);
-  
-      localStorage.setItem("pfp", imageUrl);
-      newToast("Done!", "Your new profile picture is set", "info");
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+      formData.append("userId", currentUserId);
+
+      fetch("http://localhost:8080/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            newToast("Done!", "Your new profile picture is set", "info");
+          } else {
+            newToast("Error!", "Failed to upload image", "error");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          newToast("Error!", "Failed to upload image", "error");
+        });
     } else {
       newToast("Error!", "No file selected", "error");
     }

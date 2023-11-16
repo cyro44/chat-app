@@ -1,10 +1,11 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
 import cors from "cors";
+import express from "express";
+import fs from "fs";
+import { createServer } from "http";
+import multer from "multer";
+import path from "path";
+import { Server } from "socket.io";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,46 @@ apiRouter.get("/users", (res) => {
     fs.readFileSync(path.join(__dirname, "data", "messages.json"), "utf8")
   );
   res.json({ users });
+});
+
+const upload = multer({ dest: "uploads/" });
+
+app.post("/upload", upload.single("image"), (req, res) => {
+  const tempPath = req.file.path;
+  const targetPath = path.join(
+    __dirname,
+    "./data/uploads/",
+    req.body.userId + path.extname(req.file.originalname)
+  );
+
+  const dir = path.join(__dirname, "./data/uploads/");
+
+  fs.readdirSync(dir).forEach((file) => {
+    if (file.startsWith(req.body.userId)) {
+      fs.unlinkSync(path.join(dir, file));
+    }
+  });
+
+  fs.rename(tempPath, targetPath, (err) => {
+    if (err) {
+      console.error(err);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to upload image" });
+      return;
+    }
+
+    const imageUrl = `http://localhost:8080/${req.file.originalname}`;
+    const usersData = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+    const user = usersData.find((user) => user.userId === req.body.userId);
+
+    if (user) {
+      user.pfp = imageUrl;
+      fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
+    }
+
+    res.status(200).json({ success: true, imageUrl });
+  });
 });
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
