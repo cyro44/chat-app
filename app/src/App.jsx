@@ -108,6 +108,7 @@ function App() {
         .then((data) => {
           if (data.success) {
             newToast("Done!", "Your new profile picture is set", "info");
+            localStorage.setItem("pfp", data.pfp);
           } else {
             newToast("Error!", "Failed to upload image", "error");
           }

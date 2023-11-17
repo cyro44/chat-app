@@ -67,16 +67,26 @@ app.post("/upload", upload.single("image"), (req, res) => {
       return;
     }
 
-    const imageUrl = `http://localhost:8080/${req.file.originalname}`;
+    const imageUrl = `http://localhost:8080/${
+      req.body.userId + path.extname(req.file.originalname)
+    }`;
     const usersData = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
     const user = usersData.find((user) => user.userId === req.body.userId);
+    const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
+    const userId = req.body.userId;
+    const pfpPath = `/uploads/pfps/${userId}${path.extname(
+      req.file.originalname
+    )}`;
+    const userIdStr = String(userId);
+    users[userIdStr] = { pfp: pfpPath };
+    fs.writeFileSync("./data/users.json", JSON.stringify(users));
 
     if (user) {
       user.pfp = imageUrl;
       fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
     }
 
-    res.status(200).json({ success: true, imageUrl });
+    res.json({ success: true, pfp: pfpPath, imageUrl });
   });
 });
 
