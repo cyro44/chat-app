@@ -42,7 +42,7 @@ apiRouter.get("/users", (res) => {
 
 const upload = multer({ dest: "uploads/" });
 
-app.post("/api/users/uploads", upload.single("image"), (req, res) => {
+apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
   const tempPath = req.file.path;
   const targetPath = path.join(
     __dirname,
