@@ -100,7 +100,7 @@ function App() {
       formData.append("image", selectedFile);
       formData.append("userId", currentUserId);
 
-      fetch("http://localhost:8080/upload", {
+      fetch("http://localhost:8080/api/users/uploads", {
         method: "POST",
         body: formData,
       })
