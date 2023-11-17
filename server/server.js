@@ -66,16 +66,14 @@ apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
       return;
     }
 
-    const imageUrl = `http://localhost:8080/${
+    const imageUrl = `http://localhost:8080/api/users/uploads/${
       req.body.userId + path.extname(req.file.originalname)
     }`;
     const usersData = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
     const user = usersData.find((user) => user.userId === req.body.userId);
     const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
     const userId = req.body.userId;
-    const pfpPath = `/api/users/uploads/pfps/${path.extname(
-      req.file.originalname
-    )}`;
+    const pfpPath = `/api/users/uploads/${path.extname(req.file.originalname)}`;
     const userIdStr = String(userId);
     users[userIdStr] = { pfp: pfpPath };
     fs.writeFileSync("./data/users.json", JSON.stringify(users));
@@ -170,9 +168,10 @@ io.on("connection", (socket) => {
       usersData = JSON.parse(fileContent);
     }
 
-    const userIndex = usersData.findIndex((user) => user.id === socket.id);
+    const userIndex = usersData.findIndex((user) => user.userId === userId);
     if (userIndex !== -1) {
-      usersData[userIndex] = { id: socket.id, username, userId };
+      usersData[userIndex].username = username;
+      usersData[userIndex].id = socket.id;
     } else {
       usersData.push({ id: socket.id, username, userId });
     }
