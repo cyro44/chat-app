@@ -40,10 +40,9 @@ apiRouter.get("/users", (res) => {
   res.json({ users });
 });
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
 apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
-  const tempPath = req.file.path;
   const targetPath = path.join(
     __dirname,
     "./data/uploads/",
@@ -58,7 +57,7 @@ apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
     }
   });
 
-  fs.rename(tempPath, targetPath, (err) => {
+  fs.writeFile(targetPath, req.file.buffer, (err) => {
     if (err) {
       console.error(err);
       res
