@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { newToast } from "./util/toast";
 import io from "socket.io-client";
+import usersData from "../../server/data/users.json";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -275,6 +276,12 @@ function App() {
     let username = localStorage.getItem("username");
     let pfp = localStorage.getItem("pfp");
 
+    const user = usersData.find((user) => user.userId === currentUserId);
+
+    if (user) {
+      pfp = user.pfp;
+    }
+
     if (!username || username === "" || !pfp || pfp === "") {
       if (!username || username === "") {
         newToast("Error!", "Please set your username first", "error", 2500);
@@ -345,19 +352,22 @@ function App() {
       nextMessage &&
       nextMessage.userId === currentUserId
     ) {
-      const updatedNextMessage = {
-        ...nextMessage,
-        username: localStorage.getItem("username"),
-        pfp: localStorage.getItem("pfp"),
-      };
+      const user = usersData.find((user) => user.userId === currentUserId);
+      if (user) {
+        const updatedNextMessage = {
+          ...nextMessage,
+          username: localStorage.getItem("username"),
+          pfp: user.pfp,
+        };
 
-      const nextMessageIndex = updatedMessages.findIndex(
-        (msg) => msg.id === nextMessage.id
-      );
-      updatedMessages[nextMessageIndex] = updatedNextMessage;
-      setMessages(updatedMessages);
+        const nextMessageIndex = updatedMessages.findIndex(
+          (msg) => msg.id === nextMessage.id
+        );
+        updatedMessages[nextMessageIndex] = updatedNextMessage;
+        setMessages(updatedMessages);
 
-      socket.emit("edit_message", updatedNextMessage);
+        socket.emit("edit_message", updatedNextMessage);
+      }
     }
 
     socket.emit("delete_message", id);
