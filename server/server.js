@@ -73,7 +73,7 @@ apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
     const user = usersData.find((user) => user.userId === req.body.userId);
     const users = JSON.parse(fs.readFileSync("./data/users.json", "utf8"));
     const userId = req.body.userId;
-    const pfpPath = `/uploads/pfps/${userId}${path.extname(
+    const pfpPath = `/api/users/uploads/pfps/${path.extname(
       req.file.originalname
     )}`;
     const userIdStr = String(userId);
@@ -90,6 +90,10 @@ apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
+apiRouter.use(
+  "/users/uploads",
+  express.static(path.join(__dirname, "./data/uploads"))
+);
 
 const users = new Map();
 
