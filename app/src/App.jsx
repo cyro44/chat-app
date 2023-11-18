@@ -210,9 +210,37 @@ function App() {
       name: roomName,
     };
 
-    socket.emit("add_room", newRoom);
-    setRooms((oldRooms) => [...oldRooms, newRoom]);
+    fetch("http://localhost:8080/api/rooms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newRoom),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          socket.emit("add_room", newRoom);
+          setRooms((oldRooms) => [...oldRooms, newRoom]);
+        } else {
+          console.error("Failed to create room");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/rooms")
+      .then((response) => response.json())
+      .then((data) => {
+        setRooms(data.rooms);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
 
   const handleChange = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -409,16 +437,19 @@ function App() {
         <div className="globalRoom" onClick={() => handleJoinRoom("global")}>
           <i id="icon" className="fa-solid fa-globe"></i>
         </div>
-        {rooms.map((room) => (
-          <div
-            className="room"
-            key={room.id}
-            onClick={() => handleJoinRoom(room.id)}
-          >
-            <i id="icon" className="fa-solid fa-comment"></i>
-            <div className="roomName">{room.name}</div>
-          </div>
-        ))}
+        {rooms.map(
+          (room) =>
+            room && (
+              <div
+                className="room"
+                key={room.id}
+                onClick={() => handleJoinRoom(room.id)}
+              >
+                <i id="icon" className="fa-solid fa-comment"></i>
+                <div className="roomName">{room.name}</div>
+              </div>
+            )
+        )}
         <div className="addRoom" onClick={() => handleAddRoomSettings()}>
           <i id="icon" className="fa-solid fa-plus"></i>
         </div>

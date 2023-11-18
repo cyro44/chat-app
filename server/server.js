@@ -16,6 +16,7 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(cors());
+app.use(express.json());
 
 const io = new Server(httpServer, {
   cors: {
@@ -38,6 +39,38 @@ apiRouter.get("/users", (res) => {
     fs.readFileSync(path.join(__dirname, "data", "messages.json"), "utf8")
   );
   res.json({ users });
+});
+
+apiRouter.post("/rooms", (req, res) => {
+  const newRoom = req.body;
+  const roomsFilePath = path.join(__dirname, "data", "rooms.json");
+
+  let rooms = [];
+  if (fs.existsSync(roomsFilePath)) {
+    const fileContent = fs.readFileSync(roomsFilePath, "utf-8");
+    if (fileContent) {
+      rooms = JSON.parse(fileContent);
+    }
+  }
+
+  rooms.push(newRoom);
+  fs.writeFileSync(roomsFilePath, JSON.stringify(rooms));
+
+  res.json({ success: true });
+});
+
+apiRouter.get("/rooms", (req, res) => {
+  const roomsFilePath = path.join(__dirname, "data", "rooms.json");
+
+  let rooms = [];
+  if (fs.existsSync(roomsFilePath)) {
+    const fileContent = fs.readFileSync(roomsFilePath, "utf-8");
+    if (fileContent) {
+      rooms = JSON.parse(fileContent);
+    }
+  }
+
+  res.json({ rooms });
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
