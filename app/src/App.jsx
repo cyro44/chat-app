@@ -91,8 +91,31 @@ function App() {
   }, [socket, currentUser, typingUser]);
 
   const handleFileInput = (e) => {
-    setSelectedFile(e.target.files[0]);
-    setFileSelected(true);
+    const file = e.target.files[0];
+    if (file.size > 8 * 1024 * 1024) {
+      newToast(
+        "Error!",
+        "File size is too large. Please select a file smaller than 8 MB.",
+        "error"
+      );
+      return;
+    }
+
+    const img = new Image();
+    img.onload = function () {
+      if (this.width > 256 || this.height > 256) {
+        newToast(
+          "Error!",
+          "Image dimensions are too large. Please select an image smaller than 256x256 pixels.",
+          "error"
+        );
+        return;
+      }
+
+      setSelectedFile(file);
+      setFileSelected(true);
+    };
+    img.src = URL.createObjectURL(file);
   };
 
   const changePfp = () => {
