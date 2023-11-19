@@ -11,6 +11,8 @@ function App() {
   const messagesEndRef = useRef(null);
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState("global");
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteUsername, setInviteUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [username, setUsername] = useState("");
   const [socket, setSocket] = useState(null);
@@ -22,7 +24,8 @@ function App() {
   const typingTimeoutRef = useRef();
 
   const currentUser = localStorage.getItem("username");
-  const currentUserId = localStorage.getItem("userId");
+  const user = usersData.find((user) => user.username === currentUser);
+  const currentUserId = user ? user.userId : null;
 
   const isUserAtBottom = () => {
     return (
@@ -211,6 +214,14 @@ function App() {
     newRoomContainer.style.display = "none";
   };
 
+  const inviteModal = document.querySelector(".inviteModal");
+
+  const removeInviteModal = () => {
+    if (inviteModal) {
+      inviteModal.style.display = "none";
+    }
+  };
+
   const handleJoinRoom = (roomId) => {
     if (currentRoom) {
       socket.emit("leave_room", currentRoom);
@@ -231,6 +242,7 @@ function App() {
     const newRoom = {
       id: uuidv4(),
       name: roomName,
+      members: [currentUserId],
     };
 
     fetch("http://localhost:8080/api/rooms", {
@@ -252,6 +264,30 @@ function App() {
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+
+  const handleInviteClick = () => {
+    setShowInviteModal(true);
+    inviteModal.style.display = "block";
+  };
+
+  const handleInviteSubmit = (e) => {
+    e.preventDefault();
+    fetch(`http://localhost:8080/api/invite//`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          newToast("Done!", `User  has been invited`, "info");
+        } else {
+          newToast("Error!", data.message, "error");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        newToast("Error!", "Failed to invite user", "error");
+      });
+    setInviteUsername("");
+    setShowInviteModal(false);
   };
 
   useEffect(() => {
@@ -327,8 +363,6 @@ function App() {
     let username = localStorage.getItem("username");
     let pfp = localStorage.getItem("pfp");
 
-    const user = usersData.find((user) => user.userId === currentUserId);
-
     if (user) {
       pfp = user.pfp;
     }
@@ -403,7 +437,6 @@ function App() {
       nextMessage &&
       nextMessage.userId === currentUserId
     ) {
-      const user = usersData.find((user) => user.userId === currentUserId);
       if (user) {
         const updatedNextMessage = {
           ...nextMessage,
@@ -460,18 +493,49 @@ function App() {
         <div className="globalRoom" onClick={() => handleJoinRoom("global")}>
           <i id="icon" className="fa-solid fa-globe"></i>
         </div>
-        {rooms.map(
-          (room) =>
-            room && (
-              <div
-                className="room"
-                key={room.id}
-                onClick={() => handleJoinRoom(room.id)}
-              >
-                <i id="icon" className="fa-solid fa-comment"></i>
-                <div className="roomName">{room.name}</div>
-              </div>
-            )
+        {rooms
+          .filter((room) => room.members.includes(currentUserId))
+          .map(
+            (room) =>
+              room && (
+                <div key={room.id}>
+                  <div className="room" onClick={() => handleJoinRoom(room.id)}>
+                    <i id="icon" className="fa-solid fa-comment"></i>
+                    <div className="roomName">{room.name}</div>
+                  </div>
+                  {room.id !== "global" && (
+                    <button onClick={handleInviteClick} className="inviteBtn">
+                      Invite
+                    </button>
+                  )}
+                </div>
+              )
+          )}
+        {showInviteModal && (
+          <div className="inviteModal">
+            <span
+              id="closeInviteModal"
+              className="close"
+              onClick={removeInviteModal}
+            >
+              <i className="fa-solid fa-square-xmark"></i>
+            </span>
+            <h1 style={{ textAlign: "center" }}>
+              Invite somebody to your Room!
+            </h1>
+            <form onSubmit={handleInviteSubmit}>
+              <input
+                type="text"
+                value={inviteUsername}
+                onChange={(e) => setInviteUsername(e.target.value)}
+                placeholder="Enter username to invite"
+                className="inviteInput"
+              />
+              <button type="submit" className="invite">
+                Invite
+              </button>
+            </form>
+          </div>
         )}
         <div className="addRoom" onClick={() => handleAddRoomSettings()}>
           <i id="icon" className="fa-solid fa-plus"></i>

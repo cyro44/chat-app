@@ -73,6 +73,30 @@ apiRouter.get("/rooms", (req, res) => {
   res.json({ rooms });
 });
 
+apiRouter.get("/invite/:roomId/:username", (req, res) => {
+  const { roomId, username } = req.params;
+  const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+  const user = users.find((user) => user.username === username);
+  if (!user) {
+    res.json({ success: false, message: "User not found" });
+    return;
+  }
+
+  const roomsFilePath = path.join(__dirname, "data", "rooms.json");
+  let rooms = JSON.parse(fs.readFileSync(roomsFilePath, "utf8"));
+  const room = rooms.find((room) => room.id === roomId);
+  if (!room) {
+    res.json({ success: false, message: "Room not found" });
+    return;
+  }
+
+  room.users.push(user);
+
+  fs.writeFileSync(roomsFilePath, JSON.stringify(rooms));
+
+  res.json({ success: true });
+});
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {

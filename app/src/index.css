@@ -113,6 +113,38 @@ h1 {
   width: 50vw;
 }
 
+.inviteBtn {
+  position: fixed;
+  top: 10px;
+  right: 125px;
+  z-index: 2;
+}
+
+.invite {
+  background-color: #242424;
+  width: 500px;
+  height: 100px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.inviteInput {
+  width: 80%;
+}
+
+.inviteModal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  width: 75vw;
+  height: 75vh;
+  z-index: 2;
+  padding: 20px;
+}
+
 .strong {
   font-weight: 600;
 }
