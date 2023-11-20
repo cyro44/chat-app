@@ -495,22 +495,23 @@ function App() {
         </div>
         {rooms
           .filter((room) => room.members.includes(currentUserId))
-          .map(
-            (room) =>
+          .map((room) => {
+            return (
               room && (
                 <div key={room.id}>
                   <div className="room" onClick={() => handleJoinRoom(room.id)}>
                     <i id="icon" className="fa-solid fa-comment"></i>
                     <div className="roomName">{room.name}</div>
                   </div>
-                  {room.id !== "global" && (
+                  {currentRoom !== "global" && (
                     <button onClick={handleInviteClick} className="inviteBtn">
                       Invite
                     </button>
                   )}
                 </div>
               )
-          )}
+            );
+          })}
         {showInviteModal && (
           <div className="inviteModal">
             <span
