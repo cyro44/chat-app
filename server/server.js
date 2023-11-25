@@ -78,7 +78,6 @@ apiRouter.get("/rooms", (req, res) => {
 apiRouter.get("/invite/:roomId/:username", (req, res) => {
   const { roomId, username } = req.params;
   const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
-  console.log(roomId, username);
   const user = users.find((user) => user.username === username);
   if (!user) {
     res.json({ success: false, message: "User not found" });
@@ -102,13 +101,9 @@ apiRouter.get("/invite/:roomId/:username", (req, res) => {
 
   fs.writeFileSync(roomsFilePath, JSON.stringify(rooms));
 
-  console.log("userId:", userId);
-  console.log("userSockets:", userSockets);
   const invitedUserSocket = userSockets.get(userId);
-  console.log("invitedUserSocket:", invitedUserSocket);
   if (invitedUserSocket) {
     io.emit("room_invitation", { room, userId });
-    console.log("SKIBIDI")
     res.json({
       success: true,
     });
@@ -117,7 +112,7 @@ apiRouter.get("/invite/:roomId/:username", (req, res) => {
 
   res.json({
     success: false,
-    message: "user aint connected bruv",
+    message: "User is not connected",
   });
 });
 
