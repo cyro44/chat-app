@@ -169,6 +169,29 @@ function App() {
         }
       });
 
+      s.on("room_invitation", ({ room, userId }) => {
+        const currentUser = localStorage.getItem("username");
+        const user = usersData.find((user) => user.username === currentUser);
+        const currentUserId = user ? user.userId : null;
+
+        if (userId === currentUserId) {
+          setRooms((oldRooms) => {
+            const roomIndex = oldRooms.findIndex(
+              (oldRoom) => oldRoom.id === room.id
+            );
+            if (roomIndex !== -1) {
+              const updatedRooms = [...oldRooms];
+              updatedRooms[roomIndex] = room;
+              updatedRooms[roomIndex].members.push(userId);
+              return updatedRooms;
+            } else {
+              room.members.push(userId);
+              return [...oldRooms, room];
+            }
+          });
+        }
+      });
+
       s.on("existing_messages", (existingMessages) => {
         setMessages(existingMessages);
         setTimeout(() => {
@@ -267,13 +290,15 @@ function App() {
   };
 
   const handleInviteClick = () => {
+    const inviteModal = document.querySelector(".inviteModal");
     setShowInviteModal(true);
-    inviteModal.style.display = "block";
+    if (inviteModal) {
+      inviteModal.style.display = "block";
+    }
   };
-
   const handleInviteSubmit = (e) => {
     e.preventDefault();
-    fetch(`http://localhost:8080/api/invite//`)
+    fetch(`http://localhost:8080/api/invite/${currentRoom}/${inviteUsername}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
@@ -493,25 +518,29 @@ function App() {
         <div className="globalRoom" onClick={() => handleJoinRoom("global")}>
           <i id="icon" className="fa-solid fa-globe"></i>
         </div>
-        {rooms
-          .filter((room) => room.members.includes(currentUserId))
-          .map((room) => {
-            return (
-              room && (
-                <div key={room.id}>
-                  <div className="room" onClick={() => handleJoinRoom(room.id)}>
-                    <i id="icon" className="fa-solid fa-comment"></i>
-                    <div className="roomName">{room.name}</div>
+        {username &&
+          rooms
+            .filter((room) => room.members.includes(currentUserId))
+            .map((room) => {
+              return (
+                room && (
+                  <div key={room.id}>
+                    <div
+                      className="room"
+                      onClick={() => handleJoinRoom(room.id)}
+                    >
+                      <i id="icon" className="fa-solid fa-comment"></i>
+                      <div className="roomName">{room.name}</div>
+                    </div>
+                    {currentRoom !== "global" && (
+                      <button onClick={handleInviteClick} className="inviteBtn">
+                        Invite
+                      </button>
+                    )}
                   </div>
-                  {currentRoom !== "global" && (
-                    <button onClick={handleInviteClick} className="inviteBtn">
-                      Invite
-                    </button>
-                  )}
-                </div>
-              )
-            );
-          })}
+                )
+              );
+            })}
         {showInviteModal && (
           <div className="inviteModal">
             <span
@@ -591,17 +620,10 @@ function App() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="off"
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                if (e.target.value == currentUser) {
-                  newToast(
-                    "Error!",
-                    "The username you chose is the same as your current username",
-                    "error",
-                    2500
-                  );
-                  return;
-                }
+            />
+            <button
+              className="saveUsernameBtn"
+              onClick={() => {
                 if (
                   username.length >= 4 &&
                   username.length <= 18 &&
@@ -624,7 +646,9 @@ function App() {
                   );
                 }
               }}
-            />
+            >
+              Save
+            </button>
           </div>
           <div className="profilePicContainer">
             <h2 className="profilePicH2">Set or Change Your Profile Picture</h2>

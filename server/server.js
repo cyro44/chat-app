@@ -27,6 +27,8 @@ const io = new Server(httpServer, {
 
 app.use("/api", apiRouter);
 
+const userSockets = new Map();
+
 apiRouter.get("/messages", (res) => {
   const messages = JSON.parse(
     fs.readFileSync(path.join(__dirname, "data", "messages.json"), "utf8")
@@ -76,11 +78,13 @@ apiRouter.get("/rooms", (req, res) => {
 apiRouter.get("/invite/:roomId/:username", (req, res) => {
   const { roomId, username } = req.params;
   const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+  console.log(roomId, username);
   const user = users.find((user) => user.username === username);
   if (!user) {
     res.json({ success: false, message: "User not found" });
     return;
   }
+  const userId = user.userId;
 
   const roomsFilePath = path.join(__dirname, "data", "rooms.json");
   let rooms = JSON.parse(fs.readFileSync(roomsFilePath, "utf8"));
@@ -90,11 +94,31 @@ apiRouter.get("/invite/:roomId/:username", (req, res) => {
     return;
   }
 
+  if (!room.users) {
+    room.users = [];
+  }
   room.users.push(user);
+  room.members.push(user.id);
 
   fs.writeFileSync(roomsFilePath, JSON.stringify(rooms));
 
-  res.json({ success: true });
+  console.log("userId:", userId);
+  console.log("userSockets:", userSockets);
+  const invitedUserSocket = userSockets.get(userId);
+  console.log("invitedUserSocket:", invitedUserSocket);
+  if (invitedUserSocket) {
+    io.emit("room_invitation", { room, userId });
+    console.log("SKIBIDI")
+    res.json({
+      success: true,
+    });
+    return;
+  }
+
+  res.json({
+    success: false,
+    message: "user aint connected bruv",
+  });
 });
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -208,6 +232,7 @@ io.on("connection", (socket) => {
 
   socket.on("set_username", (username, userId) => {
     users.set(socket.id, { username, userId });
+    userSockets.set(userId, socket);
 
     if (!fs.existsSync(usersFilePath)) {
       fs.writeFileSync(
