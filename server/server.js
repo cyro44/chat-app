@@ -78,12 +78,12 @@ apiRouter.get("/rooms", (req, res) => {
 apiRouter.get("/invite/:roomId/:username", (req, res) => {
   const { roomId, username } = req.params;
   const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
-  const user = users.find((user) => user.username === username);
-  if (!user) {
+  const invitedUser = users.find((user) => user.username === username);
+  if (!invitedUser) {
     res.json({ success: false, message: "User not found" });
     return;
   }
-  const userId = user.userId;
+  const invitedUserId = invitedUser.userId;
 
   const roomsFilePath = path.join(__dirname, "data", "rooms.json");
   let rooms = JSON.parse(fs.readFileSync(roomsFilePath, "utf8"));
@@ -93,17 +93,22 @@ apiRouter.get("/invite/:roomId/:username", (req, res) => {
     return;
   }
 
+  if (room.members.includes(invitedUserId)) {
+    res.json({ success: false, message: "User is already in the room" });
+    return;
+  }
+
   if (!room.users) {
     room.users = [];
   }
-  room.users.push(user);
-  room.members.push(user.id);
+  room.users.push(invitedUser);
+  room.members.push(invitedUserId);
 
   fs.writeFileSync(roomsFilePath, JSON.stringify(rooms));
 
-  const invitedUserSocket = userSockets.get(userId);
+  const invitedUserSocket = userSockets.get(invitedUserId);
   if (invitedUserSocket) {
-    io.emit("room_invitation", { room, userId });
+    io.emit("room_invitation", { room, userId: invitedUserId });
     res.json({
       success: true,
     });

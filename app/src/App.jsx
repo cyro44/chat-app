@@ -262,6 +262,10 @@ function App() {
   };
 
   const handleAddRoom = (roomName) => {
+    if (!currentUserId) {
+      newToast("Error!", "You must be logged in to create a room", "error");
+      return;
+    }
     const newRoom = {
       id: uuidv4(),
       name: roomName,
@@ -296,13 +300,22 @@ function App() {
       inviteModal.style.display = "block";
     }
   };
+
   const handleInviteSubmit = (e) => {
     e.preventDefault();
+    const room = rooms.find((room) => room.id === currentRoom);
+    const userToInvite = usersData.find(
+      (user) => user.username === inviteUsername
+    );
+    if (room && userToInvite && room.members.includes(userToInvite.userId)) {
+      newToast("Error!", "User is already in the room", "error");
+      return;
+    }
     fetch(`http://localhost:8080/api/invite/${currentRoom}/${inviteUsername}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          newToast("Done!", `User  has been invited`, "info");
+          newToast("Done!", `User has been invited`, "info");
         } else {
           newToast("Error!", data.message, "error");
         }
@@ -503,6 +516,7 @@ function App() {
 
   const isFirstVisit = localStorage.getItem("isFirstVisit");
   if (!isFirstVisit) {
+    currentUserId == uuidv4();
     newToast(
       "Welcome!",
       "This is your first time here. Click on your own message to edit and click the trash icon to delete. Remember to set a username and profile picture! Enjoy chatting!",
@@ -518,29 +532,25 @@ function App() {
         <div className="globalRoom" onClick={() => handleJoinRoom("global")}>
           <i id="icon" className="fa-solid fa-globe"></i>
         </div>
-        {username &&
-          rooms
-            .filter((room) => room.members.includes(currentUserId))
-            .map((room) => {
-              return (
-                room && (
-                  <div key={room.id}>
-                    <div
-                      className="room"
-                      onClick={() => handleJoinRoom(room.id)}
-                    >
-                      <i id="icon" className="fa-solid fa-comment"></i>
-                      <div className="roomName">{room.name}</div>
-                    </div>
-                    {currentRoom !== "global" && (
-                      <button onClick={handleInviteClick} className="inviteBtn">
-                        Invite
-                      </button>
-                    )}
+        {rooms
+          .filter((room) => room.members.includes(currentUserId))
+          .map((room) => {
+            return (
+              room && (
+                <div key={room.id}>
+                  <div className="room" onClick={() => handleJoinRoom(room.id)}>
+                    <i id="icon" className="fa-solid fa-comment"></i>
+                    <div className="roomName">{room.name}</div>
                   </div>
-                )
-              );
-            })}
+                  {currentRoom !== "global" && (
+                    <button onClick={handleInviteClick} className="inviteBtn">
+                      Invite
+                    </button>
+                  )}
+                </div>
+              )
+            );
+          })}
         {showInviteModal && (
           <div className="inviteModal">
             <span
@@ -623,21 +633,21 @@ function App() {
             />
             <button
               className="saveUsernameBtn"
-              onClick={() => {
+              onClick={(e) => {
                 if (
                   username.length >= 4 &&
                   username.length <= 18 &&
                   !/\s/.test(username)
                 ) {
-                  if (localStorage.getItem("userId") === null) {
+                  if (currentUserId === null) {
                     userId = uuidv4();
                   } else {
-                    userId = localStorage.getItem("userId");
+                    userId = currentUserId;
                   }
                   socket.emit("set_username", username, userId);
                   localStorage.setItem("username", username);
                   newToast("Done!", "Username set to " + username, "info");
-                  setUsername("");
+                  setUsername(e.target.value);
                 } else {
                   newToast(
                     "Error!",
