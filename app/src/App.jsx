@@ -241,7 +241,7 @@ function App() {
 
   const removeInviteModal = () => {
     if (inviteModal) {
-      inviteModal.style.display = "none";
+      setShowInviteModal(false);
     }
   };
 
@@ -307,7 +307,7 @@ function App() {
     const userToInvite = usersData.find(
       (user) => user.username === inviteUsername
     );
-    if (room && userToInvite && room.members.includes(userToInvite.userId)) {
+    if (userToInvite && room.members.includes(userToInvite.userId)) {
       newToast("Error!", "User is already in the room", "error");
       return;
     }
