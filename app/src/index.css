@@ -93,16 +93,27 @@ h1 {
   transform: translate(-50%, -50%);
 }
 
+.roomTitle {
+  position: fixed;
+  background-color: #1a1a1a;
+  width: 100vw;
+  transform: translateX(-15px);
+  padding-left: 20px;
+  z-index: 400;
+}
+
 .addRoomContainer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
   background-color: #1a1a1a;
   border-radius: 10px;
   width: 80vw;
   height: 80vh;
+  left: 50%;
+  transform: translateX(10%);
 }
 
 .addRoomInput {
@@ -117,7 +128,8 @@ h1 {
   position: fixed;
   top: 10px;
   right: 125px;
-  z-index: 2;
+  z-index: 444;
+  background-color: #242424;
 }
 
 .invite {
@@ -309,6 +321,7 @@ input {
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #555 transparent;
+  transform: translateY(50px);
 }
 
 .messages::-webkit-scrollbar {
@@ -415,7 +428,8 @@ input {
   position: fixed;
   top: 10px;
   right: 15px;
-  z-index: 2;
+  z-index: 444;
+  background-color: #242424;
 }
 
 .usernameContainer,

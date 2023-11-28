@@ -11,6 +11,7 @@ function App() {
   const messagesEndRef = useRef(null);
   const [rooms, setRooms] = useState([]);
   const [currentRoom, setCurrentRoom] = useState("global");
+  const [currentRoomName, setCurrentRoomName] = useState("global");
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -245,7 +246,7 @@ function App() {
     }
   };
 
-  const handleJoinRoom = (roomId) => {
+  const handleJoinRoom = (roomId, roomName) => {
     if (currentRoom) {
       socket.emit("leave_room", currentRoom);
     }
@@ -253,6 +254,7 @@ function App() {
     socket.emit("join_room", roomId);
     socket.emit("get_room_messages", roomId);
     setCurrentRoom(roomId);
+    setCurrentRoomName(roomName);
   };
 
   const handleAddRoomSettings = () => {
@@ -529,7 +531,10 @@ function App() {
   return (
     <>
       <div className="rooms">
-        <div className="globalRoom" onClick={() => handleJoinRoom("global")}>
+        <div
+          className="globalRoom"
+          onClick={() => handleJoinRoom("global", "global")}
+        >
           <i id="icon" className="fa-solid fa-globe"></i>
         </div>
         {rooms
@@ -538,7 +543,10 @@ function App() {
             return (
               room && (
                 <div key={room.id}>
-                  <div className="room" onClick={() => handleJoinRoom(room.id)}>
+                  <div
+                    className="room"
+                    onClick={() => handleJoinRoom(room.id, room.name)}
+                  >
                     <i id="icon" className="fa-solid fa-comment"></i>
                     <div className="roomName">{room.name}</div>
                   </div>
@@ -580,36 +588,39 @@ function App() {
         <div className="addRoom" onClick={() => handleAddRoomSettings()}>
           <i id="icon" className="fa-solid fa-plus"></i>
         </div>
-      </div>
-      <div className="addRoomContainer" style={{ display: "none" }}>
-        <span id="closeRoomModal" className="close" onClick={removeRoomModal}>
-          <i className="fa-solid fa-square-xmark"></i>
-        </span>
-        <input
-          className="addRoomInput"
-          type="text"
-          placeholder="Type a room name"
-          style={{ display: "none" }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              const roomName = e.target.value;
-              if (roomName.trim() !== "") {
-                handleAddRoom(roomName);
-                e.target.value = "";
-                removeRoomModal();
-              } else {
-                newToast(
-                  "Error!",
-                  "Room name cannot be empty or only spaces",
-                  "error"
-                );
+        <div className="addRoomContainer" style={{ display: "none" }}>
+          <span id="closeRoomModal" className="close" onClick={removeRoomModal}>
+            <i className="fa-solid fa-square-xmark"></i>
+          </span>
+          <input
+            className="addRoomInput"
+            type="text"
+            placeholder="Type a room name"
+            style={{ display: "none" }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const roomName = e.target.value;
+                if (roomName.trim() !== "") {
+                  handleAddRoom(roomName);
+                  e.target.value = "";
+                  removeRoomModal();
+                } else {
+                  newToast(
+                    "Error!",
+                    "Room name cannot be empty or only spaces",
+                    "error"
+                  );
+                }
               }
-            }
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
       <div className="chat">
+        <div className="roomTitle">
+          <h2>{currentRoomName}</h2>
+        </div>
         <button className="settingsBtn" onClick={toggleModal}>
           Settings
         </button>
