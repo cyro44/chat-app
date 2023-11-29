@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { newToast } from "./util/toast";
 import io from "socket.io-client";
@@ -24,6 +25,7 @@ function App() {
   const [typingUser, setTypingUser] = useState("");
   const typingTimeoutRef = useRef();
 
+  const navigate = useNavigate();
   const currentUser = localStorage.getItem("username");
   const user = usersData.find((user) => user.username === currentUser);
   const currentUserId = user ? user.userId : null;
@@ -255,6 +257,7 @@ function App() {
     socket.emit("get_room_messages", roomId);
     setCurrentRoom(roomId);
     setCurrentRoomName(roomName);
+    navigate(`/rooms/${roomId}`);
   };
 
   const handleAddRoomSettings = () => {
@@ -617,183 +620,199 @@ function App() {
           />
         </div>
       </div>
-      <div className="chat">
-        <div className="roomTitle">
-          <h2>{currentRoomName}</h2>
-        </div>
-        <button className="settingsBtn" onClick={toggleModal}>
-          Settings
-        </button>
-        <div
-          className="settingsModal"
-          style={{ display: showModal ? "block" : "none" }}
-        >
-          <span className="close" onClick={toggleModal}>
-            <i className="fa-solid fa-square-xmark"></i>
-          </span>
-          <h1 style={{ textAlign: "center" }}>Settings</h1>
-          <div className="usernameContainer">
-            <h2 className="usernameH2">Set or Change Your Username</h2>
-            <input
-              className="usernameInput"
-              type="text"
-              placeholder="Type in your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="off"
-            />
-            <button
-              className="saveUsernameBtn"
-              onClick={(e) => {
-                if (
-                  username.length >= 4 &&
-                  username.length <= 18 &&
-                  !/\s/.test(username)
-                ) {
-                  if (currentUserId === null) {
-                    userId = uuidv4();
-                  } else {
-                    userId = currentUserId;
-                  }
-                  socket.emit("set_username", username, userId);
-                  localStorage.setItem("username", username);
-                  newToast("Done!", "Username set to " + username, "info");
-                  setUsername(e.target.value);
-                } else {
-                  newToast(
-                    "Error!",
-                    "Username must be between 4 and 18 characters and cannot contain spaces",
-                    "error"
-                  );
-                }
-              }}
-            >
-              Save
-            </button>
-          </div>
-          <div className="profilePicContainer">
-            <h2 className="profilePicH2">Set or Change Your Profile Picture</h2>
-            <button onClick={handleClick}>Change or set Profile Picture</button>
-            <button
-              onClick={() => {
-                changePfp();
-                setFileSelected(false);
-              }}
-            >
-              Upload
-            </button>
-            {showFileInput && (
-              <div>
-                <input
-                  type="file"
-                  id="file"
-                  accept="image/*"
-                  onChange={handleFileInput}
-                  className="fileInput"
-                  style={{ display: "none" }}
-                />
-                <label htmlFor="file" className="fileInputLabel">
-                  {fileSelected ? "File Selected" : "Choose a file"}
-                </label>
-                <button
-                  onClick={() => {
-                    setShowFileInput(false);
-                    setFileSelected(false);
-                  }}
-                >
-                  Cancel
-                </button>
+      <Routes>
+        <Route
+          path="/rooms/:roomId"
+          element={
+            <div className="chat">
+              <div className="roomTitle">
+                <h2>{currentRoomName}</h2>
               </div>
-            )}
-          </div>
-        </div>
-        <div className="messages" ref={messagesEndRef}>
-          {messages
-            .filter((msg) => msg !== null)
-            .map((msg, index) => {
-              const showDate =
-                index === 0 || (msg && msg.userId !== lastDateShownUserId);
-
-              if (showDate) {
-                lastDateShownUserId = msg.userId;
-              }
-
-              return (
-                <div
-                  key={msg.id}
-                  style={{ textAlign: "left" }}
-                  className="message"
-                >
-                  <span className="messageText">
-                    {msg.pfp && (
-                      <img
-                        className="pfp"
-                        src={msg.pfp}
-                        alt="Profile picture"
+              <button className="settingsBtn" onClick={toggleModal}>
+                Settings
+              </button>
+              <div
+                className="settingsModal"
+                style={{ display: showModal ? "block" : "none" }}
+              >
+                <span className="close" onClick={toggleModal}>
+                  <i className="fa-solid fa-square-xmark"></i>
+                </span>
+                <h1 style={{ textAlign: "center" }}>Settings</h1>
+                <div className="usernameContainer">
+                  <h2 className="usernameH2">Set or Change Your Username</h2>
+                  <input
+                    className="usernameInput"
+                    type="text"
+                    placeholder="Type in your username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <button
+                    className="saveUsernameBtn"
+                    onClick={(e) => {
+                      if (
+                        username.length >= 4 &&
+                        username.length <= 18 &&
+                        !/\s/.test(username)
+                      ) {
+                        if (currentUserId === null) {
+                          userId = uuidv4();
+                        } else {
+                          userId = currentUserId;
+                        }
+                        socket.emit("set_username", username, userId);
+                        localStorage.setItem("username", username);
+                        newToast(
+                          "Done!",
+                          "Username set to " + username,
+                          "info"
+                        );
+                        setUsername(e.target.value);
+                      } else {
+                        newToast(
+                          "Error!",
+                          "Username must be between 4 and 18 characters and cannot contain spaces",
+                          "error"
+                        );
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+                <div className="profilePicContainer">
+                  <h2 className="profilePicH2">
+                    Set or Change Your Profile Picture
+                  </h2>
+                  <button onClick={handleClick}>
+                    Change or set Profile Picture
+                  </button>
+                  <button
+                    onClick={() => {
+                      changePfp();
+                      setFileSelected(false);
+                    }}
+                  >
+                    Upload
+                  </button>
+                  {showFileInput && (
+                    <div>
+                      <input
+                        type="file"
+                        id="file"
+                        accept="image/*"
+                        onChange={handleFileInput}
+                        className="fileInput"
+                        style={{ display: "none" }}
                       />
-                    )}
-                    {msg.username && (
-                      <strong className="strong">{msg.username}</strong>
-                    )}
-                    {showDate && (
-                      <span className="messageDate">
-                        {formatDate(msg.date)}
-                      </span>
-                    )}
-                    <br />
-                    <span style={{ marginLeft: "50px" }}>
-                      <p
-                        className={`messageTextText ${
-                          !msg.message.includes(" ") ? "breakAll" : ""
-                        }`}
-                        ref={messageRef}
-                        contentEditable={msg.userId === currentUserId}
-                        spellCheck="false"
-                        autoComplete="off"
-                        id={`message-${msg.id}`}
-                        onInput={(e) => {
-                          handleEditChange(msg.id, e.target.textContent);
+                      <label htmlFor="file" className="fileInputLabel">
+                        {fileSelected ? "File Selected" : "Choose a file"}
+                      </label>
+                      <button
+                        onClick={() => {
+                          setShowFileInput(false);
+                          setFileSelected(false);
                         }}
-                        suppressContentEditableWarning={true}
                       >
-                        {msg.message.split("\n").map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            <br />
-                          </span>
-                        ))}
-                      </p>
-                    </span>
-                  </span>
-                  {msg.userId === currentUserId && (
-                    <button
-                      className="deleteBtn"
-                      onClick={() => handleDelete(msg.id)}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                        Cancel
+                      </button>
+                    </div>
                   )}
                 </div>
-              );
-            })}
-        </div>
+              </div>
+              <div className="messages" ref={messagesEndRef}>
+                {messages
+                  .filter((msg) => msg !== null)
+                  .map((msg, index) => {
+                    const showDate =
+                      index === 0 ||
+                      (msg && msg.userId !== lastDateShownUserId);
 
-        {isTyping && typingUser && (
-          <div className="typingIndicator">
-            <p>{typingUser} is typing...</p>
-          </div>
-        )}
-        <textarea
-          id="messageBox"
-          className="textBox"
-          type="text"
-          placeholder="Send a message"
-          value={message}
-          onChange={handleChange}
-          onKeyDown={handleChange}
-          autoComplete="off"
-        />
-      </div>
+                    if (showDate) {
+                      lastDateShownUserId = msg.userId;
+                    }
+
+                    return (
+                      <div
+                        key={msg.id}
+                        style={{ textAlign: "left" }}
+                        className="message"
+                      >
+                        <span className="messageText">
+                          {msg.pfp && (
+                            <img
+                              className="pfp"
+                              src={msg.pfp}
+                              alt="Profile picture"
+                            />
+                          )}
+                          {msg.username && (
+                            <strong className="strong">{msg.username}</strong>
+                          )}
+                          {showDate && (
+                            <span className="messageDate">
+                              {formatDate(msg.date)}
+                            </span>
+                          )}
+                          <br />
+                          <span style={{ marginLeft: "50px" }}>
+                            <p
+                              className={`messageTextText ${
+                                !msg.message.includes(" ") ? "breakAll" : ""
+                              }`}
+                              ref={messageRef}
+                              contentEditable={msg.userId === currentUserId}
+                              spellCheck="false"
+                              autoComplete="off"
+                              id={`message-${msg.id}`}
+                              onInput={(e) => {
+                                handleEditChange(msg.id, e.target.textContent);
+                              }}
+                              suppressContentEditableWarning={true}
+                            >
+                              {msg.message.split("\n").map((line, index) => (
+                                <span key={index}>
+                                  {line}
+                                  <br />
+                                </span>
+                              ))}
+                            </p>
+                          </span>
+                        </span>
+                        {msg.userId === currentUserId && (
+                          <button
+                            className="deleteBtn"
+                            onClick={() => handleDelete(msg.id)}
+                          >
+                            <i className="fa-solid fa-trash"></i>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {isTyping && typingUser && (
+                <div className="typingIndicator">
+                  <p>{typingUser} is typing...</p>
+                </div>
+              )}
+              <textarea
+                id="messageBox"
+                className="textBox"
+                type="text"
+                placeholder="Send a message"
+                value={message}
+                onChange={handleChange}
+                onKeyDown={handleChange}
+                autoComplete="off"
+              />
+            </div>
+          }
+        ></Route>
+      </Routes>
     </>
   );
 }
