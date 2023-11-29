@@ -98,7 +98,7 @@ function App() {
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
-    if (file.size > 8 * 1024 * 1024) {
+    if (file.size > 8 * 2048 * 2048) {
       newToast(
         "Error!",
         "File size is too large. Please select a file smaller than 8 MB.",
