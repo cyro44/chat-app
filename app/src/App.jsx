@@ -30,6 +30,10 @@ function App() {
   const user = usersData.find((user) => user.username === currentUser);
   const currentUserId = user ? user.userId : null;
 
+  useEffect(() => {
+    navigate("/rooms/global");
+  }, [navigate])
+
   const isUserAtBottom = () => {
     return (
       messagesEndRef.current &&
