@@ -52,6 +52,7 @@ h1 {
 }
 
 .room,
+.home,
 .addRoom,
 .globalRoom {
   position: relative;
@@ -67,6 +68,7 @@ h1 {
 }
 
 .room:hover,
+.home:hover,
 .addRoom:hover,
 .globalRoom:hover {
   border-radius: 15px;

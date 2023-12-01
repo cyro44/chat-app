@@ -32,7 +32,7 @@ function App() {
 
   useEffect(() => {
     navigate("/rooms/global");
-  }, [navigate])
+  }, [navigate]);
 
   const isUserAtBottom = () => {
     return (
@@ -538,6 +538,12 @@ function App() {
   return (
     <>
       <div className="rooms">
+        <div
+          className="home"
+          onClick={() => handleJoinRoom("home", "home")}
+        >
+          <i id="icon" className="fa-solid fa-house"></i>
+        </div>
         <div
           className="globalRoom"
           onClick={() => handleJoinRoom("global", "global")}
