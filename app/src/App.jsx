@@ -268,6 +268,7 @@ function App() {
 
   const handleJoinHome = () => {
     if (!isAtHome) return;
+    setCurrentRoom("home");
     setIsAtHome(true);
     navigate("/")
   }
@@ -571,7 +572,7 @@ function App() {
                     <i id="icon" className="fa-solid fa-comment"></i>
                     <div className="roomName">{room.name}</div>
                   </div>
-                  {currentRoom !== "global" && (
+                  {currentRoom !== "global" && currentRoom !== "home" && (
                     <button onClick={handleInviteClick} className="inviteBtn">
                       Invite
                     </button>
