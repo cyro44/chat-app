@@ -11,6 +11,7 @@ function App() {
   const messageRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [rooms, setRooms] = useState([]);
+  const [isAtHome, setIsAtHome] = useState(true);
   const [currentRoom, setCurrentRoom] = useState("home");
   const [currentRoomName, setCurrentRoomName] = useState("home");
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -31,7 +32,7 @@ function App() {
   const currentUserId = user ? user.userId : null;
 
   useEffect(() => {
-    navigate("/rooms/home");
+    navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -264,6 +265,12 @@ function App() {
     setCurrentRoomName(roomName);
     navigate(`/rooms/${roomId}`);
   };
+
+  const handleJoinHome = () => {
+    if (!isAtHome) return;
+    setIsAtHome(true);
+    navigate("/")
+  }
 
   const handleAddRoomSettings = () => {
     const newRoomInput = document.querySelector(".addRoomInput");
@@ -541,7 +548,7 @@ function App() {
       <div className="rooms">
         <div
           className="home"
-          onClick={() => handleJoinRoom("home", "home")}
+          onClick={() => handleJoinHome("home", "home")}
         >
           <i id="icon" className="fa-solid fa-house"></i>
         </div>
