@@ -11,8 +11,8 @@ function App() {
   const messageRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [rooms, setRooms] = useState([]);
-  const [currentRoom, setCurrentRoom] = useState("global");
-  const [currentRoomName, setCurrentRoomName] = useState("global");
+  const [currentRoom, setCurrentRoom] = useState("home");
+  const [currentRoomName, setCurrentRoomName] = useState("home");
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -31,8 +31,9 @@ function App() {
   const currentUserId = user ? user.userId : null;
 
   useEffect(() => {
-    navigate("/rooms/global");
-  }, [navigate]);
+    navigate("/rooms/home");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isUserAtBottom = () => {
     return (
