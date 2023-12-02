@@ -643,6 +643,8 @@ function App() {
           element={
             <>
               <div className="directMessages">
+                <i id="addFriendIcon" className="fa-solid fa-plus"></i>
+                <p className="addFriendText">Add Friend</p>
                 <h5 className="dmHeader">DIRECT MESSAGES</h5>
                 {/* map through direct messages */}
               </div>
