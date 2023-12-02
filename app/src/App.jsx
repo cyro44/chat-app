@@ -15,6 +15,7 @@ function App() {
   const [currentRoom, setCurrentRoom] = useState("home");
   const [currentRoomName, setCurrentRoomName] = useState("home");
   const [friends, setFriends] = useState([]);
+  const [showAddFriendModal, setShowAddFriendModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -358,6 +359,14 @@ function App() {
       });
   }, []);
 
+  const handleAddFriendClick = () => {
+    setShowAddFriendModal(true);
+  };
+
+  const removeAddFriendModal = () => {
+    setShowAddFriendModal(false);
+  };
+
   const handleChange = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -643,7 +652,23 @@ function App() {
           element={
             <>
               <div className="directMessages">
-                <i id="addFriendIcon" className="fa-solid fa-plus"></i>
+                <i
+                  id="addFriendIcon"
+                  className="fa-solid fa-plus"
+                  onClick={handleAddFriendClick}
+                ></i>
+                {showAddFriendModal && (
+                  <div className="addFriendModal">
+                    <span
+                      id="closeAddFriendModal"
+                      className="close"
+                      onClick={removeAddFriendModal}
+                    >
+                      <i className="fa-solid fa-square-xmark"></i>
+                    </span>
+                    <h1>Add a friend!</h1>
+                  </div>
+                )}
                 <p className="addFriendText">Add Friend</p>
                 <h5 className="dmHeader">DIRECT MESSAGES</h5>
                 {/* map through direct messages */}

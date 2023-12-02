@@ -164,6 +164,23 @@ h1 {
   transform: scale(1);
 }
 
+.addFriendModal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  width: 75vw;
+  height: 75vh;
+  z-index: 2;
+  padding: 20px;
+}
+
+.addFriendModal h1 {
+  text-align: center;
+}
+
 .inviteBtn {
   position: fixed;
   top: 10px;
