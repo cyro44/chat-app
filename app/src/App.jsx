@@ -270,8 +270,8 @@ function App() {
     if (!isAtHome) return;
     setCurrentRoom("home");
     setIsAtHome(true);
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   const handleAddRoomSettings = () => {
     const newRoomInput = document.querySelector(".addRoomInput");
@@ -547,10 +547,7 @@ function App() {
   return (
     <>
       <div className="rooms">
-        <div
-          className="home"
-          onClick={() => handleJoinHome("home", "home")}
-        >
+        <div className="home" onClick={() => handleJoinHome("home", "home")}>
           <i id="icon" className="fa-solid fa-house"></i>
         </div>
         <div
@@ -640,6 +637,17 @@ function App() {
         </div>
       </div>
       <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <div className="directMessages">
+                <h5 className="dmHeader">DIRECT MESSAGES</h5>
+                {/* map through direct messages */}
+              </div>
+            </>
+          }
+        ></Route>
         <Route
           path="/rooms/:roomId"
           element={
