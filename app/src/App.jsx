@@ -14,6 +14,7 @@ function App() {
   const [isAtHome, setIsAtHome] = useState(true);
   const [currentRoom, setCurrentRoom] = useState("home");
   const [currentRoomName, setCurrentRoomName] = useState("home");
+  const [friends, setFriends] = useState([]);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
