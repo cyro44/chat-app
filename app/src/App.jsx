@@ -691,7 +691,18 @@ function App() {
                 )}
                 <p className="addFriendText">Add Friend</p>
                 <h5 className="dmHeader">DIRECT MESSAGES</h5>
-                {/* map through direct messages */}
+                {friends.map((friendId) => {
+                  const friendData = usersData.find(
+                    (user) => user.userId === friendId
+                  );
+
+                  return (
+                    <div key={friendId}>
+                      {/* Display friend's data */}
+                      <p>{friendData.username}</p>
+                    </div>
+                  );
+                })}
               </div>
             </>
           }
