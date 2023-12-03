@@ -181,6 +181,10 @@ h1 {
   text-align: center;
 }
 
+.addFriendInput {
+  width: 80%;
+}
+
 .inviteBtn {
   position: fixed;
   top: 10px;

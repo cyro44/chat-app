@@ -367,6 +367,16 @@ function App() {
     setShowAddFriendModal(false);
   };
 
+  const handleAddFriend = (friendUsername) => {
+    const friend = usersData.find((user) => user.username === friendUsername);
+    if (!friend) {
+      newToast("Error!", "User not found", "error");
+    } else {
+      setFriends((prevFriends) => [...prevFriends, friend.userId]);
+      newToast("Success!", "Friend request sent!", "info");
+    }
+  };
+
   const handleChange = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -667,6 +677,16 @@ function App() {
                       <i className="fa-solid fa-square-xmark"></i>
                     </span>
                     <h1>Add a friend!</h1>
+                    <input
+                      className="addFriendInput"
+                      placeholder="Type in the username of the friend you want to invite"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleAddFriend(e.target.value);
+                        }
+                        e.target.value = "";
+                      }}
+                    />
                   </div>
                 )}
                 <p className="addFriendText">Add Friend</p>
