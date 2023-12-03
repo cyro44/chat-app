@@ -368,6 +368,11 @@ function App() {
   };
 
   const handleAddFriend = (friendUsername) => {
+    const currentUser = localStorage.getItem("username");
+    if (friendUsername === currentUser) {
+      newToast("Error!", "You can't send a friend request to yourself", "error");
+      return;
+    }
     const friend = usersData.find((user) => user.username === friendUsername);
     if (!friend) {
       newToast("Error!", "User not found", "error");
@@ -683,8 +688,8 @@ function App() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           handleAddFriend(e.target.value);
+                          e.target.value = "";
                         }
-                        e.target.value = "";
                       }}
                     />
                   </div>
