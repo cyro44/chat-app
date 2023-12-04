@@ -113,7 +113,11 @@ function App() {
       socket.on("friend_request", ({ senderId, senderUsername }) => {
         setFriendRequests((prevRequests) => [
           ...prevRequests,
-          { id: senderId, username: senderUsername },
+          {
+            id: senderId,
+            username: senderUsername,
+            recipientId: currentUserId,
+          },
         ]);
       });
 
@@ -123,7 +127,7 @@ function App() {
         socket.off("room_messages");
       };
     }
-  }, [socket, currentUser, typingUser]);
+  }, [socket, currentUser, typingUser, currentUserId]);
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
@@ -415,14 +419,14 @@ function App() {
     }
   };
 
-  const handleFriendRequestResponse = (senderId, accepted) => {
+  const handleFriendRequestResponse = (senderId, accepted, recipientId) => {
     if (accepted) {
       setFriends((prevFriends) => [...prevFriends, senderId]);
     }
     socket.emit("friend_request_response", {
       accepted,
       senderId,
-      recipientId: currentUserId,
+      recipientId,
     });
   };
 
@@ -757,14 +761,22 @@ function App() {
                     <p>{request.username} has sent you a friend request.</p>
                     <button
                       onClick={() =>
-                        handleFriendRequestResponse(request.id, true)
+                        handleFriendRequestResponse(
+                          request.id,
+                          true,
+                          request.recipientId
+                        )
                       }
                     >
                       Accept
                     </button>
                     <button
                       onClick={() =>
-                        handleFriendRequestResponse(request.id, false)
+                        handleFriendRequestResponse(
+                          request.id,
+                          false,
+                          request.recipientId
+                        )
                       }
                     >
                       Reject

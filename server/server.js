@@ -274,13 +274,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("friend_request_response", ({ accepted, senderId }) => {
+  socket.on("friend_request_response", ({ accepted, senderId, recipientId }) => {
     if (accepted) {
       friendRequests = friendRequests.filter(
         (request) => request.senderId !== senderId
       );
     } else {
-      io.to(senderId).emit("friend_request_response", { accepted: false });
+      io.to(recipientId).emit("friend_request_response", { accepted: false });
     }
   });
 
