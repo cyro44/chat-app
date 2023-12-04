@@ -264,12 +264,23 @@ io.on("connection", (socket) => {
     );
   });
 
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-    const user = users.get(socket.id);
-    if (user) {
-      io.emit("user_disconnected", user.username);
-      users.delete(socket.id);
+  let friendRequests = [];
+
+  socket.on("friend_request", ({ senderId, senderUsername, recipientId }) => {
+    friendRequests.push({ senderId, senderUsername, recipientId });
+    const recipientSocket = userSockets.get(recipientId);
+    if (recipientSocket) {
+      recipientSocket.emit("friend_request", { senderId, senderUsername });
+    }
+  });
+
+  socket.on("friend_request_response", ({ accepted, senderId }) => {
+    if (accepted) {
+      friendRequests = friendRequests.filter(
+        (request) => request.senderId !== senderId
+      );
+    } else {
+      io.to(senderId).emit("friend_request_response", { accepted: false });
     }
   });
 
@@ -327,6 +338,15 @@ io.on("connection", (socket) => {
       JSON.stringify(messages)
     );
     io.emit("delete_message", messageId);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    const user = users.get(socket.id);
+    if (user) {
+      io.emit("user_disconnected", user.username);
+      users.delete(socket.id);
+    }
   });
 });
 

@@ -15,6 +15,7 @@ function App() {
   const [currentRoom, setCurrentRoom] = useState("home");
   const [currentRoomName, setCurrentRoomName] = useState("home");
   const [friends, setFriends] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState("");
@@ -94,6 +95,22 @@ function App() {
 
       socket.on("room_messages", (roomMessages) => {
         setMessages(roomMessages);
+      });
+
+      socket.on("friend_request_response", ({ accepted, senderId }) => {
+        if (accepted) {
+          setFriends((prevFriends) => [...prevFriends, senderId]);
+          newToast("Success!", "Friend request accepted!", "info");
+        } else {
+          newToast("Error!", "Friend request rejected", "error");
+        }
+      });
+
+      socket.on("friend_request", ({ senderId, senderUsername }) => {
+        setFriendRequests((prevRequests) => [
+          ...prevRequests,
+          { id: senderId, username: senderUsername },
+        ]);
       });
 
       return () => {
@@ -370,16 +387,39 @@ function App() {
   const handleAddFriend = (friendUsername) => {
     const currentUser = localStorage.getItem("username");
     if (friendUsername === currentUser) {
-      newToast("Error!", "You can't send a friend request to yourself", "error");
+      newToast(
+        "Error!",
+        "You can't send a friend request to yourself",
+        "error"
+      );
       return;
     }
     const friend = usersData.find((user) => user.username === friendUsername);
     if (!friend) {
       newToast("Error!", "User not found", "error");
     } else {
-      setFriends((prevFriends) => [...prevFriends, friend.userId]);
+      socket.emit("friend_request", {
+        senderId: currentUserId,
+        senderUsername: currentUser,
+        recipientId: friend.userId,
+      });
       newToast("Success!", "Friend request sent!", "info");
+      setFriendRequests((prevRequests) => [
+        ...prevRequests,
+        { id: friend.userId, username: friendUsername },
+      ]);
     }
+  };
+
+  const handleFriendRequestResponse = (senderId, accepted) => {
+    if (accepted) {
+      setFriends((prevFriends) => [...prevFriends, senderId]);
+    }
+    socket.emit("friend_request_response", {
+      accepted,
+      senderId,
+      recipientId: currentUserId,
+    });
   };
 
   const handleChange = (e) => {
@@ -708,6 +748,25 @@ function App() {
                     </div>
                   );
                 })}
+                {friendRequests.map((request) => (
+                  <div key={request.id} className="friendRequest">
+                    <p>{request.username} has sent you a friend request.</p>
+                    <button
+                      onClick={() =>
+                        handleFriendRequestResponse(request.id, true)
+                      }
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleFriendRequestResponse(request.id, false)
+                      }
+                    >
+                      Reject
+                    </button>
+                  </div>
+                ))}
               </div>
             </>
           }

@@ -185,6 +185,10 @@ h1 {
   width: 80%;
 }
 
+.friendRequest {
+  z-index: 68465489532;
+}
+
 .inviteBtn {
   position: fixed;
   top: 10px;
