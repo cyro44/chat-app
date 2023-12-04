@@ -6,6 +6,7 @@ import io from "socket.io-client";
 import usersData from "../../server/data/users.json";
 
 function App() {
+  const [hasNavigated, setHasNavigated] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messageRef = useRef(null);
@@ -35,7 +36,10 @@ function App() {
   const currentUserId = user ? user.userId : null;
 
   useEffect(() => {
-    navigate("/");
+    if (!hasNavigated) {
+      navigate("/");
+      setHasNavigated(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
