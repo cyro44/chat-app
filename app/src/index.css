@@ -28,7 +28,7 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 h1 {
@@ -186,7 +186,24 @@ h1 {
 }
 
 .friendRequest {
-  z-index: 68465489532;
+  position: fixed;
+  z-index: 999999;
+  background-color: #1a1a1a;
+  width: calc(80vw - 70px);
+  padding: 5px;
+  margin: 10px;
+  border-radius: 8px;
+  transform: translateY(5px);
+  right: 0;
+}
+
+.friendRequest button {
+  margin: 5px;
+  background-color: #242424;
+}
+
+.friendRequest p {
+  margin-left: 10px;
 }
 
 .inviteBtn {
