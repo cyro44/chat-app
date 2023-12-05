@@ -110,16 +110,19 @@ function App() {
         }
       });
 
-      socket.on("friend_request", ({ senderId, senderUsername }) => {
-        setFriendRequests((prevRequests) => [
-          ...prevRequests,
-          {
-            id: senderId,
-            username: senderUsername,
-            recipientId: currentUserId,
-          },
-        ]);
-      });
+      socket.on(
+        "friend_request",
+        ({ senderId, senderUsername, recipientId }) => {
+          setFriendRequests((prevRequests) => [
+            ...prevRequests,
+            {
+              id: senderId,
+              username: senderUsername,
+              recipientId,
+            },
+          ]);
+        }
+      );
 
       return () => {
         socket.off("typing");
@@ -393,7 +396,6 @@ function App() {
   };
 
   const handleAddFriend = (friendUsername) => {
-    const currentUser = localStorage.getItem("username");
     if (friendUsername === currentUser) {
       newToast(
         "Error!",
@@ -756,33 +758,36 @@ function App() {
                     </div>
                   );
                 })}
-                {friendRequests.map((request) => (
-                  <div key={request.id} className="friendRequest">
-                    <p>{request.username} has sent you a friend request.</p>
-                    <button
-                      onClick={() =>
-                        handleFriendRequestResponse(
-                          request.id,
-                          true,
-                          request.recipientId
-                        )
-                      }
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={() =>
-                        handleFriendRequestResponse(
-                          request.id,
-                          false,
-                          request.recipientId
-                        )
-                      }
-                    >
-                      Reject
-                    </button>
-                  </div>
-                ))}
+                {friendRequests.map(
+                  (request) =>
+                    currentUserId === request.recipientId && (
+                      <div key={request.id} className="friendRequest">
+                        <p>{request.username} has sent you a friend request.</p>
+                        <button
+                          onClick={() =>
+                            handleFriendRequestResponse(
+                              request.id,
+                              true,
+                              request.recipientId
+                            )
+                          }
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleFriendRequestResponse(
+                              request.id,
+                              false,
+                              request.recipientId
+                            )
+                          }
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )
+                )}
               </div>
             </>
           }

@@ -268,21 +268,21 @@ io.on("connection", (socket) => {
 
   socket.on("friend_request", ({ senderId, senderUsername, recipientId }) => {
     friendRequests.push({ senderId, senderUsername, recipientId });
-    const recipientSocket = userSockets.get(recipientId);
-    if (recipientSocket) {
-      recipientSocket.emit("friend_request", { senderId, senderUsername });
-    }
+    io.emit("friend_request", { senderId, senderUsername, recipientId });
   });
 
-  socket.on("friend_request_response", ({ accepted, senderId, recipientId }) => {
-    if (accepted) {
-      friendRequests = friendRequests.filter(
-        (request) => request.senderId !== senderId
-      );
-    } else {
-      io.to(recipientId).emit("friend_request_response", { accepted: false });
+  socket.on(
+    "friend_request_response",
+    ({ accepted, senderId, recipientId }) => {
+      if (accepted) {
+        friendRequests = friendRequests.filter(
+          (request) => request.senderId !== senderId
+        );
+      } else {
+        io.to(recipientId).emit("friend_request_response", { accepted: false });
+      }
     }
-  });
+  );
 
   socket.on("typing", (username) => {
     socket.broadcast.emit("typing", username);
