@@ -113,14 +113,16 @@ function App() {
       socket.on(
         "friend_request",
         ({ senderId, senderUsername, recipientId }) => {
-          setFriendRequests((prevRequests) => [
-            ...prevRequests,
-            {
-              id: senderId,
-              username: senderUsername,
-              recipientId,
-            },
-          ]);
+          if (currentUserId === recipientId) {
+            setFriendRequests((prevRequests) => [
+              ...prevRequests,
+              {
+                id: senderId,
+                username: senderUsername,
+                recipientId,
+              },
+            ]);
+          }
         }
       );
 
@@ -430,6 +432,10 @@ function App() {
       senderId,
       recipientId,
     });
+
+    setFriendRequests((prevRequests) =>
+      prevRequests.filter((request) => request.id !== senderId)
+    );
   };
 
   const handleChange = (e) => {
