@@ -410,16 +410,23 @@ function App() {
     if (!friend) {
       newToast("Error!", "User not found", "error");
     } else {
-      socket.emit("friend_request", {
-        senderId: currentUserId,
-        senderUsername: currentUser,
-        recipientId: friend.userId,
-      });
-      newToast("Success!", "Friend request sent!", "info");
-      setFriendRequests((prevRequests) => [
-        ...prevRequests,
-        { id: friend.userId, username: friendUsername },
-      ]);
+      const existingRequest = friendRequests.find(
+        (request) => request.username === friendUsername
+      );
+      if (existingRequest) {
+        newToast("Error!", "Friend request already sent to this user", "error");
+      } else {
+        socket.emit("friend_request", {
+          senderId: currentUserId,
+          senderUsername: currentUser,
+          recipientId: friend.userId,
+        });
+        newToast("Success!", "Friend request sent!", "info");
+        setFriendRequests((prevRequests) => [
+          ...prevRequests,
+          { id: friend.userId, username: friendUsername },
+        ]);
+      }
     }
   };
 
