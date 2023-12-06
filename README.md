@@ -12,13 +12,13 @@ This is a real-time chat application built with React, Node.js, Express, and Soc
 ## Installation
 
 1. Clone the repository: 
-    - HTTPS: https://github.com/cyro44/chat-app.git
-    - SSH: git@github.com:cyro44/chat-app.git
-    - Github CLI: gh repo clone cyro44/chat-app
+    - HTTPS: `https://github.com/cyro44/chat-app.git`
+    - SSH: `git@github.com:cyro44/chat-app.git`
+    - Github CLI: `gh repo clone cyro44/chat-app`
 
-2. Install the dependencies: cd chat-app npm install
+2. Install the dependencies: `cd chat-app npm install`
 
-3. Start the server: npm start
+3. Start the server: `npm start`
 
 4. Open your browser and navigate to `http://localhost:5173`.
 
