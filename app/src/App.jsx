@@ -147,10 +147,10 @@ function App() {
 
     const img = new Image();
     img.onload = function () {
-      if (this.width > 256 || this.height > 256) {
+      if (this.width > 1024 || this.height > 1024) {
         newToast(
           "Error!",
-          "Image dimensions are too large. Please select an image smaller than 256x256 pixels.",
+          "Image dimensions are too large. Please select an image smaller than 1024x1024 pixels.",
           "error"
         );
         return;
