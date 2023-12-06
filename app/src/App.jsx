@@ -634,6 +634,9 @@ function App() {
 
   return (
     <>
+      <button className="settingsBtn" onClick={toggleModal}>
+        Settings
+      </button>
       <div className="rooms">
         <div className="home" onClick={() => handleJoinHome("home", "home")}>
           <i id="icon" className="fa-solid fa-house"></i>
@@ -812,9 +815,6 @@ function App() {
               <div className="roomTitle">
                 <h2>{currentRoomName}</h2>
               </div>
-              <button className="settingsBtn" onClick={toggleModal}>
-                Settings
-              </button>
               <div
                 className="settingsModal"
                 style={{ display: showModal ? "block" : "none" }}
