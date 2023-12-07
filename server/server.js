@@ -278,6 +278,41 @@ io.on("connection", (socket) => {
         friendRequests = friendRequests.filter(
           (request) => request.senderId !== senderId
         );
+
+        let usersData = [];
+        const fileContent = fs.readFileSync(
+          path.join(__dirname, "data", "users.json"),
+          "utf8"
+        );
+        if (fileContent) {
+          usersData = JSON.parse(fileContent);
+        }
+
+        const senderIndex = usersData.findIndex(
+          (user) => user.userId === senderId
+        );
+        const recipientIndex = usersData.findIndex(
+          (user) => user.userId === recipientId
+        );
+
+        if (senderIndex !== -1) {
+          if (!usersData[senderIndex].friends) {
+            usersData[senderIndex].friends = [];
+          }
+          usersData[senderIndex].friends.push(recipientId);
+        }
+
+        if (recipientIndex !== -1) {
+          if (!usersData[recipientIndex].friends) {
+            usersData[recipientIndex].friends = [];
+          }
+          usersData[recipientIndex].friends.push(senderId);
+        }
+
+        fs.writeFileSync(
+          path.join(__dirname, "data", "users.json"),
+          JSON.stringify(usersData)
+        );
       } else {
         io.to(recipientId).emit("friend_request_response", { accepted: false });
       }
