@@ -637,6 +637,89 @@ function App() {
       <button className="settingsBtn" onClick={toggleModal}>
         Settings
       </button>
+      <div
+        className="settingsModal"
+        style={{ display: showModal ? "block" : "none" }}
+      >
+        <span className="close" onClick={toggleModal}>
+          <i className="fa-solid fa-square-xmark"></i>
+        </span>
+        <h1 style={{ textAlign: "center" }}>Settings</h1>
+        <div className="usernameContainer">
+          <h2 className="usernameH2">Set or Change Your Username</h2>
+          <input
+            className="usernameInput"
+            type="text"
+            placeholder="Type in your username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="off"
+          />
+          <button
+            className="saveUsernameBtn"
+            onClick={(e) => {
+              if (
+                username.length >= 4 &&
+                username.length <= 18 &&
+                !/\s/.test(username)
+              ) {
+                if (currentUserId === null) {
+                  userId = uuidv4();
+                } else {
+                  userId = currentUserId;
+                }
+                socket.emit("set_username", username, userId);
+                localStorage.setItem("username", username);
+                newToast("Done!", "Username set to " + username, "info");
+                setUsername(e.target.value);
+              } else {
+                newToast(
+                  "Error!",
+                  "Username must be between 4 and 18 characters and cannot contain spaces",
+                  "error"
+                );
+              }
+            }}
+          >
+            Save
+          </button>
+        </div>
+        <div className="profilePicContainer">
+          <h2 className="profilePicH2">Set or Change Your Profile Picture</h2>
+          <button onClick={handleClick}>Change or set Profile Picture</button>
+          <button
+            onClick={() => {
+              changePfp();
+              setFileSelected(false);
+            }}
+          >
+            Upload
+          </button>
+          {showFileInput && (
+            <div>
+              <input
+                type="file"
+                id="file"
+                accept="image/*"
+                onChange={handleFileInput}
+                className="fileInput"
+                style={{ display: "none" }}
+              />
+              <label htmlFor="file" className="fileInputLabel">
+                {fileSelected ? "File Selected" : "Choose a file"}
+              </label>
+              <button
+                onClick={() => {
+                  setShowFileInput(false);
+                  setFileSelected(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="rooms">
         <div className="home" onClick={() => handleJoinHome("home", "home")}>
           <i id="icon" className="fa-solid fa-house"></i>
@@ -814,97 +897,6 @@ function App() {
             <div className="chat">
               <div className="roomTitle">
                 <h2>{currentRoomName}</h2>
-              </div>
-              <div
-                className="settingsModal"
-                style={{ display: showModal ? "block" : "none" }}
-              >
-                <span className="close" onClick={toggleModal}>
-                  <i className="fa-solid fa-square-xmark"></i>
-                </span>
-                <h1 style={{ textAlign: "center" }}>Settings</h1>
-                <div className="usernameContainer">
-                  <h2 className="usernameH2">Set or Change Your Username</h2>
-                  <input
-                    className="usernameInput"
-                    type="text"
-                    placeholder="Type in your username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    autoComplete="off"
-                  />
-                  <button
-                    className="saveUsernameBtn"
-                    onClick={(e) => {
-                      if (
-                        username.length >= 4 &&
-                        username.length <= 18 &&
-                        !/\s/.test(username)
-                      ) {
-                        if (currentUserId === null) {
-                          userId = uuidv4();
-                        } else {
-                          userId = currentUserId;
-                        }
-                        socket.emit("set_username", username, userId);
-                        localStorage.setItem("username", username);
-                        newToast(
-                          "Done!",
-                          "Username set to " + username,
-                          "info"
-                        );
-                        setUsername(e.target.value);
-                      } else {
-                        newToast(
-                          "Error!",
-                          "Username must be between 4 and 18 characters and cannot contain spaces",
-                          "error"
-                        );
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                </div>
-                <div className="profilePicContainer">
-                  <h2 className="profilePicH2">
-                    Set or Change Your Profile Picture
-                  </h2>
-                  <button onClick={handleClick}>
-                    Change or set Profile Picture
-                  </button>
-                  <button
-                    onClick={() => {
-                      changePfp();
-                      setFileSelected(false);
-                    }}
-                  >
-                    Upload
-                  </button>
-                  {showFileInput && (
-                    <div>
-                      <input
-                        type="file"
-                        id="file"
-                        accept="image/*"
-                        onChange={handleFileInput}
-                        className="fileInput"
-                        style={{ display: "none" }}
-                      />
-                      <label htmlFor="file" className="fileInputLabel">
-                        {fileSelected ? "File Selected" : "Choose a file"}
-                      </label>
-                      <button
-                        onClick={() => {
-                          setShowFileInput(false);
-                          setFileSelected(false);
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
               </div>
               <div className="messages" ref={messagesEndRef}>
                 {messages
