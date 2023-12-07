@@ -768,7 +768,7 @@ function App() {
                   );
 
                   return (
-                    <div key={friendId}>
+                    <div className="friend" key={friendId}>
                       {/* Display friend's data */}
                       <p>{friendData.username}</p>
                     </div>
