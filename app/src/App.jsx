@@ -852,11 +852,7 @@ function App() {
 
                   return (
                     <div className="friend" key={friendId}>
-                      <img
-                        src={friendData.pfp}
-                        alt="friend's profile"
-                        className="friendPfp"
-                      />
+                      <img src={friendData.pfp} className="friendPfp" />
                       <p>{friendData.username}</p>
                     </div>
                   );
