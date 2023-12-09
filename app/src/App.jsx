@@ -41,7 +41,6 @@ function App() {
       setHasNavigated(true);
     }
 
-    const currentUser = localStorage.getItem("username");
     if (currentUser) {
       fetch(`http://localhost:8080/api/users/${currentUser}`)
         .then((response) => response.json())
