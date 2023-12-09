@@ -168,6 +168,17 @@ apiRouter.post("/users/uploads", upload.single("image"), (req, res) => {
   });
 });
 
+apiRouter.get("/users/:username", (req, res) => {
+  const { username } = req.params;
+  const usersData = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+  const user = usersData.find((user) => user.username === username);
+  if (user) {
+    res.json({ friends: user.friends });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
 app.use(express.static(path.join(__dirname, "../chat-app/dist")));
 apiRouter.use(
   "/users/uploads",

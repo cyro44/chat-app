@@ -40,6 +40,21 @@ function App() {
       navigate("/");
       setHasNavigated(true);
     }
+
+    const currentUser = localStorage.getItem("username");
+    if (currentUser) {
+      fetch(`http://localhost:8080/api/users/${currentUser}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data.friends)) {
+            setFriends(data.friends);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -845,18 +860,19 @@ function App() {
                 )}
                 <p className="addFriendText">Add Friend</p>
                 <h5 className="dmHeader">DIRECT MESSAGES</h5>
-                {friends.map((friendId) => {
-                  const friendData = usersData.find(
-                    (user) => user.userId === friendId
-                  );
+                {friends &&
+                  friends.map((friendId) => {
+                    const friendData = usersData.find(
+                      (user) => user.userId === friendId
+                    );
 
-                  return (
-                    <div className="friend" key={friendId}>
-                      <img src={friendData.pfp} className="friendPfp" />
-                      <p>{friendData.username}</p>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div className="friend" key={friendId}>
+                        <img src={friendData.pfp} className="friendPfp" />
+                        <p>{friendData.username}</p>
+                      </div>
+                    );
+                  })}
                 {friendRequests.map(
                   (request) =>
                     currentUserId === request.recipientId && (
